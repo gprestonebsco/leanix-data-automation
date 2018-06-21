@@ -1,0 +1,53 @@
+{
+  allFactSheets(filter: {
+    facetFilters: [
+      {facetKey: "FactSheetTypes", keys: ["Interface"]},
+      {facetKey: "relInterfaceToITComponent", operator: NOR, keys: ["__missing__"]}
+    ],
+    displayName: "Common Facets / Language Facet"
+  }) {
+    edges {
+      node {
+        id
+        displayName
+        ... on Interface {
+          relInterfaceToITComponent {
+            edges {
+              node {
+                id
+                factSheet {
+                  id
+                  displayName
+                  ... on ITComponent {
+                  	relITComponentToApplication {
+                      edges {
+                        node {
+                          id
+                          factSheet {
+                            id
+                            displayName
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          relInterfaceToProviderApplication {
+            edges {
+              node {
+                id
+                factSheet {
+                  id
+                  displayName
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
