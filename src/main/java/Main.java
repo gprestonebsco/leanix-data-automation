@@ -16,20 +16,20 @@ public class Main {
 
     GraphqlApi graphqlApi = new GraphqlApi(apiClient);
 
-    FileUtils f = new FileUtils("src/main/resources/query.graphql");
-    String query = f.readlines();
+    FileUtils mainFile = new FileUtils("src/main/resources/main.graphql");
+    String mainQuery = mainFile.readlines();
 
-    GraphQLRequest graphqlRequest = new GraphQLRequest();
-    graphqlRequest.setQuery(query);
+    GraphQLRequest mainRequest = new GraphQLRequest();
+    mainRequest.setQuery(mainQuery);
 
-    GraphQLResult graphqlResult = graphqlApi.processGraphQL(graphqlRequest);
+    GraphQLResult mainResult = graphqlApi.processGraphQL(mainRequest);
 
-    if (graphqlResult.getErrors() != null) {
+    if (mainResult.getErrors() != null) {
       System.out.println("GraphQL response includes errors");
     }
 
-    if (graphqlResult.getData() != null) {
-      Map<String, Map<String, Object>> data = (Map<String, Map<String, Object>>) graphqlResult.getData();
+    if (mainResult.getData() != null) {
+      Map<String, Map<String, Object>> data = (Map<String, Map<String, Object>>) mainResult.getData();
       List<Map<String, Object>> edgeList = (List<Map<String, Object>>) data.get("allFactSheets").get("edges");
 
       // Iterate through all behaviors
@@ -63,24 +63,50 @@ public class Main {
           List<Map<String, Object>> itApplications = (List<Map<String, Object>>)
                   relITComponentToApplication.get("edges");
 
-          // Try to find Behavious Provider ID in the IT Component's Bounded Countexts
+          // Try to find Behavior Provider ID in the IT Component's Bounded Countexts
           boolean containsBehaviousProviderId = false;
           for (Map<String, Object> applicationEdge : itApplications) {
             Map<String, Object> applicationNode = (Map<String, Object>) applicationEdge.get("node");
             Map<String, Object> applicationFactSheet = (Map<String, Object>) applicationNode.get("factSheet");
             if (applicationFactSheet.get("id").equals(behaviorProviderId)) {
               containsBehaviousProviderId = true;
+              break;
             }
           }
+
           System.out.println(itFactSheet.get("displayName") + " (" + itFactSheet.get("id") + "): "
                   + containsBehaviousProviderId);
+
+          // If IT Component is not related to the Behavior Provider, create the relation
+          if (!containsBehaviousProviderId) {
+            // Doesn't like being in a different static method for some reason
+            // TODO: Make into separate method/class
+
+            // First find the revision
+            FileUtils revFile = new FileUtils("src/main/resources/rev.graphql");
+            String revQuery = revFile.readlines().replaceAll("#id", (String) itFactSheet.get("id"));
+
+            GraphQLRequest revRequest = new GraphQLRequest();
+            mainRequest.setQuery(revQuery);
+
+            GraphQLResult revResult = graphqlApi.processGraphQL(revRequest);
+
+            if (revResult.getErrors() != null) {
+              System.out.println("GraphQL response includes errors");
+            }
+
+            if (revResult.getData() != null) {
+              Map<String, Map<String, Object>> revData = (Map<String, Map<String, Object>>) mainResult.getData();
+              System.out.println(revData);
+            }
+          }
         }
         System.out.println("\n==================================================================\n");
       }
     }
 
     /*
-    Map<String, Map<String, Object>> data = (Map<String, Map<String, Object>>) graphqlResult.getData();
+    Map<String, Map<String, Object>> data = (Map<String, Map<String, Object>>) mainResult.getData();
     List<Map<String, Object>> edgeList = (List<Map<String, Object>>) data.get("allFactSheets").get("edges");
 
     for (Map<String, Object> edge : edgeList) {

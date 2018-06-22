@@ -3,7 +3,9 @@
     facetFilters: [
       {facetKey: "FactSheetTypes", keys: ["Interface"]},
       {facetKey: "relInterfaceToITComponent", operator: NOR, keys: ["__missing__"]}
-    ]}) {
+    ],
+    displayName: "Data Automation Test Behavior"
+    }) {
     edges {
       node {
         id
