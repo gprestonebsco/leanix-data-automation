@@ -32,28 +32,29 @@ public class Main {
       Map<String, Map<String, Object>> data = (Map<String, Map<String, Object>>) graphqlResult.getData();
       List<Map<String, Object>> edgeList = (List<Map<String, Object>>) data.get("allFactSheets").get("edges");
 
-      // Iterate through all Behaviours
+      // Iterate through all behaviors
       for (Map<String, Object> edge : edgeList) {
         Map<String, Object> node = (Map<String, Object>) edge.get("node");
-        System.out.println(node);
+        System.out.println("Behavior: " + node.get("displayName") + " (" + node.get("id") + ")");
 
-        // Get Behaviour Provider IDs
+        // Get behavior Provider IDs
         Map<String, Object> relInterfaceToProviderApplication = (Map<String, Object>)
                 node.get("relInterfaceToProviderApplication");
         List<Map<String, Object>> applications = (List<Map<String, Object>>)
                 relInterfaceToProviderApplication.get("edges");
-        Map<String, Object> behaviourProviderNode = (Map<String, Object>) applications.get(0).get("node");
-        Map<String, Object> behaviourProviderFactSheet = (Map<String, Object>) behaviourProviderNode.get("factSheet");
+        Map<String, Object> behaviorProviderNode = (Map<String, Object>) applications.get(0).get("node");
+        Map<String, Object> behaviorProviderFactSheet = (Map<String, Object>) behaviorProviderNode.get("factSheet");
 
-        String behaviourProviderDisplayName = (String) behaviourProviderFactSheet.get("displayName");
-        String behaviourProviderId = (String) behaviourProviderFactSheet.get("id");
+        String behaviorProviderDisplayName = (String) behaviorProviderFactSheet.get("displayName");
+        String behaviorProviderId = (String) behaviorProviderFactSheet.get("id");
 
-        System.out.println(behaviourProviderDisplayName + ": " + behaviourProviderId);
+        System.out.println("Behavior Provider: " + behaviorProviderDisplayName + " (" + behaviorProviderId + ")");
 
-        // Look through IT Components to see if they are each associated with the Behaviour Provider
+        // Look through IT Components to see if they are each associated with the behavior Provider
         Map<String, Object> relInterfaceToITComponent = (Map<String, Object>) node.get("relInterfaceToITComponent");
         List<Map<String, Object>> itComponents = (List<Map<String, Object>>) relInterfaceToITComponent.get("edges");
 
+        System.out.println("\nIT Components contain Behavior Provider:");
         for (Map<String, Object> itEdge : itComponents) {
           Map<String, Object> itNode = (Map<String, Object>) itEdge.get("node");
           Map<String, Object> itFactSheet = (Map<String, Object>) itNode.get("factSheet");
@@ -67,12 +68,14 @@ public class Main {
           for (Map<String, Object> applicationEdge : itApplications) {
             Map<String, Object> applicationNode = (Map<String, Object>) applicationEdge.get("node");
             Map<String, Object> applicationFactSheet = (Map<String, Object>) applicationNode.get("factSheet");
-            if (applicationFactSheet.get("id").equals(behaviourProviderId)) {
+            if (applicationFactSheet.get("id").equals(behaviorProviderId)) {
               containsBehaviousProviderId = true;
             }
           }
-          System.out.println(containsBehaviousProviderId);
+          System.out.println(itFactSheet.get("displayName") + " (" + itFactSheet.get("id") + "): "
+                  + containsBehaviousProviderId);
         }
+        System.out.println("\n==================================================================\n");
       }
     }
 
