@@ -205,29 +205,52 @@ public class Main {
         Map<String, Object> applicationNode = (Map<String, Object>) applicationEdge.get("node");
         Map<String, Object> applicationFactSheet = (Map<String, Object>) applicationNode.get("factSheet");
 
-        // Get the revision number
-        Map<String, String> revIds = new HashMap<String, String>();
-        revIds.put("id", (String) applicationFactSheet.get("id"));
+        Map<String, Object> relApplicationToUserGroup = (Map<String, Object>)
+                applicationFactSheet.get("relApplicationToUserGroup");
+        List<Map<String, Object>> personaEdges = (List<Map<String, Object>>)
+                relApplicationToUserGroup.get("edges");
 
-        Query revQuery = new Query(apiClient, "src/main/resources/rev.graphql", revIds);
-        Map<String, Map<String, Object>> revData = revQuery.execute();
+        // Check if Bounded Context has relation to desired Persona
+        boolean containsPersona = false;
+        for (Map<String, Object> personaEdge : personaEdges) {
+          Map<String, Object> currentNode = (Map<String, Object>) personaEdge.get("node");
+          Map<String, Object> currentFactSheet = (Map<String, Object>) currentNode.get("factSheet");
+          if (currentFactSheet.get("id").equals(personaId)) {
+            containsPersona = true;
+            break;
+          }
+        }
 
-        String rev = revData.get("factSheet").get("rev").toString();
+        System.out.println("* " + applicationFactSheet.get("displayName")
+                + " (" + applicationFactSheet.get("id") + "): " + containsPersona);
 
-        // Make the mutation
-        Map<String, String> mutationIds = new HashMap<String, String>();
-        mutationIds.put("boundedcontextid", (String) applicationFactSheet.get("id"));
-        mutationIds.put("rev", rev);
-        mutationIds.put("personaid", personaId);
+        // If Bounded Context isn't related to desired Persona, fix that
+        if (!containsPersona) {
+          // Get the revision number
+          Map<String, String> revIds = new HashMap<String, String>();
+          revIds.put("id", (String) applicationFactSheet.get("id"));
 
-        Query mutationQuery = new Query(apiClient, "src/main/resources/mutation3.graphql", mutationIds);
-        Map<String, Map<String, Object>> mutationData = mutationQuery.execute();
+          Query revQuery = new Query(apiClient, "src/main/resources/rev.graphql", revIds);
+          Map<String, Map<String, Object>> revData = revQuery.execute();
 
-        if (mutationData != null) {
-          System.out.println("  >>> Relation between " + applicationFactSheet.get("displayName")
-                  + " and " + personaDisplayName + " added.");
-        } else {
-          System.out.println("  >>> WARNING: No response for relation mutation .");
+          String rev = revData.get("factSheet").get("rev").toString();
+
+          // Make the mutation
+          Map<String, String> mutationIds = new HashMap<String, String>();
+          mutationIds.put("boundedcontextid", (String) applicationFactSheet.get("id"));
+          mutationIds.put("rev", rev);
+          mutationIds.put("personaid", personaId);
+
+          Query mutationQuery = new Query(apiClient, "src/main/resources/mutation3.graphql", mutationIds);
+          Map<String, Map<String, Object>> mutationData = mutationQuery.execute();
+
+          if (mutationData != null) {
+            System.out.println("  >>> Relation between " + applicationFactSheet.get("displayName")
+                    + " and " + personaDisplayName + " added.");
+          }
+          else {
+            System.out.println("  >>> WARNING: No response for relation mutation .");
+          }
         }
       }
     }
@@ -240,6 +263,7 @@ public class Main {
             .withTokenProviderHost("us.leanix.net")
             .build();
 
+    System.out.println("\n==================================================================");
     System.out.println("AUTOMATION 1");
 
     automation1(apiClient);

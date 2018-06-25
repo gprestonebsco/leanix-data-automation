@@ -1,3 +1,4 @@
+import io.swagger.annotations.Api;
 import net.leanix.api.*;
 import net.leanix.api.common.*;
 import net.leanix.api.models.*;
@@ -30,7 +31,7 @@ class Query {
     if (result.getErrors() != null) {
       System.out.println("ERROR:");
       System.out.println(result.getErrors());
-      throw new IllegalArgumentException();
+      throw new ApiException();
     }
 
     if (result.getData() != null) {

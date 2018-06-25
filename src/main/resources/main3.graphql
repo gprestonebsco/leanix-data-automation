@@ -19,6 +19,19 @@
                 factSheet {
                   id
                   displayName
+                  ... on Application {
+                    relApplicationToUserGroup {
+                      edges {
+                        node {
+                          id
+                          factSheet {
+                            id
+                            displayName
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
