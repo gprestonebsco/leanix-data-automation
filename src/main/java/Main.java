@@ -14,7 +14,7 @@ public class Main {
 
     // Iterate through all behaviors
     for (Map<String, Object> edge : edgeList) {
-      System.out.println("\n------------------------------------------------------------------\n");
+      System.out.println("------------------------------------------------------------------\n");
 
       Map<String, Object> node = (Map<String, Object>) edge.get("node");
       System.out.println("Behavior: " + node.get("displayName") + " (" + node.get("id") + ")");
@@ -99,7 +99,7 @@ public class Main {
 
     // Iterate through all behaviors
     for (Map<String, Object> edge : edgeList) {
-      System.out.println("\n------------------------------------------------------------------\n");
+      System.out.println("------------------------------------------------------------------\n");
 
       Map<String, Object> node = (Map<String, Object>) edge.get("node");
       System.out.println("Behavior: " + node.get("displayName") + " (" + node.get("id") + ")");
@@ -184,6 +184,8 @@ public class Main {
     // Iterate through the queried IT Components
     List<Map<String, Object>> edgeList = (List<Map<String, Object>>) finalData.get("allFactSheets").get("edges");
     for (Map<String, Object> edge : edgeList) {
+      System.out.println("------------------------------------------------------------------\n");
+
       Map<String, Object> node = (Map<String, Object>) edge.get("node");
       System.out.println("IT Component: " + node.get("displayName") + " (" + node.get("id") + ")");
 
