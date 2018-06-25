@@ -69,7 +69,7 @@ public class Main {
             }
           }
 
-          System.out.println(itFactSheet.get("displayName") + " (" + itFactSheet.get("id") + "): "
+          System.out.println("* " + itFactSheet.get("displayName") + " (" + itFactSheet.get("id") + "): "
                   + containsBehaviourProviderId);
 
           // If IT Component is not related to the Behavior Provider, create the relation
@@ -110,7 +110,7 @@ public class Main {
                         mutationResult.getData();
                 System.out.println(mutationData);
                 */
-                System.out.println("Relation between " + itFactSheet.get("displayName")
+                System.out.println("  >>> Relation between " + itFactSheet.get("displayName")
                         + " and " + behaviorProviderDisplayName + " added.");
               }
             }
@@ -141,7 +141,7 @@ public class Main {
             }
           }
 
-          System.out.println(dataFactSheet.get("displayName") + " (" + dataFactSheet.get("id") + "): "
+          System.out.println("* " + dataFactSheet.get("displayName") + " (" + dataFactSheet.get("id") + "): "
                   + containsBehaviourProviderId);
 
           // If Data Object is not related to the Behavior Provider, create the relation
@@ -182,7 +182,7 @@ public class Main {
                         mutationResult.getData();
                 System.out.println(mutationData);
                 */
-                System.out.println("Relation between " + dataFactSheet.get("displayName")
+                System.out.println("  >>> Relation between " + dataFactSheet.get("displayName")
                         + " and " + behaviorProviderDisplayName + " added.");
               }
             }
