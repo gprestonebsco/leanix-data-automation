@@ -21,10 +21,22 @@ class Query {
     }
   }
 
-  GraphQLResult execute() throws ApiException {
+  Map<String, Map<String, Object>> execute() throws ApiException {
     GraphqlApi graphqlApi = new GraphqlApi(this.apiClient);
     GraphQLRequest request = new GraphQLRequest();
     request.setQuery(this.query);
-    return graphqlApi.processGraphQL(request);
+    GraphQLResult result = graphqlApi.processGraphQL(request);
+
+    if (result.getErrors() != null) {
+      System.out.println("ERROR:");
+      System.out.println(result.getErrors());
+      throw new IllegalArgumentException();
+    }
+
+    if (result.getData() != null) {
+      return (Map<String, Map<String, Object>>) result.getData();
+    } else {
+      return null;
+    }
   }
 }
