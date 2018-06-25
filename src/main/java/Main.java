@@ -14,6 +14,8 @@ public class Main {
 
     // Iterate through all behaviors
     for (Map<String, Object> edge : edgeList) {
+      System.out.println("\n------------------------------------------------------------------\n");
+
       Map<String, Object> node = (Map<String, Object>) edge.get("node");
       System.out.println("Behavior: " + node.get("displayName") + " (" + node.get("id") + ")");
 
@@ -86,8 +88,6 @@ public class Main {
           }
         }
       }
-
-      System.out.println("\n------------------------------------------------------------------\n");
     }
   }
 
@@ -99,6 +99,8 @@ public class Main {
 
     // Iterate through all behaviors
     for (Map<String, Object> edge : edgeList) {
+      System.out.println("\n------------------------------------------------------------------\n");
+
       Map<String, Object> node = (Map<String, Object>) edge.get("node");
       System.out.println("Behavior: " + node.get("displayName") + " (" + node.get("id") + ")");
 
@@ -165,24 +167,69 @@ public class Main {
           if (mutationData != null) {
             System.out.println("  >>> Relation between " + dataFactSheet.get("displayName")
                     + " and " + behaviorProviderDisplayName + " added.");
-          } else {
+          }
+          else {
             System.out.println("  >>> WARNING: No response for relation mutation .");
           }
         }
       }
-
-      System.out.println("\n------------------------------------------------------------------\n");
     }
   }
 
+  // NOTE: Not sure if this actually does the right thing
   private static void automation3(ApiClient apiClient) throws ApiException {
     Query finalQuery = new Query(apiClient, "src/main/resources/main3.graphql", new HashMap<String, String>());
     Map<String, Map<String, Object>> finalData = finalQuery.execute();
 
+    // Iterate through the queried IT Components
     List<Map<String, Object>> edgeList = (List<Map<String, Object>>) finalData.get("allFactSheets").get("edges");
     for (Map<String, Object> edge : edgeList) {
       Map<String, Object> node = (Map<String, Object>) edge.get("node");
-      // TODO: Finish
+      System.out.println("IT Component: " + node.get("displayName") + " (" + node.get("id") + ")");
+
+      Map<String, Object> relITComponentToUserGroup = (Map<String, Object>) node.get("relITComponentToUserGroup");
+      List<Map<String, Object>> personas = (List<Map<String, Object>>)
+              relITComponentToUserGroup.get("edges");
+      Map<String, Object> personaNode = (Map<String, Object>) personas.get(0).get("node");
+      Map<String, Object> personaFactSheet = (Map<String, Object>) personaNode.get("factSheet");
+
+      String personaDisplayName = (String) personaFactSheet.get("displayName");
+      String personaId = (String) personaFactSheet.get("id");
+
+      // Look through Bounded Contexts to see if they are each associated with the Persona
+      Map<String, Object> relITComponentToApplication = (Map<String, Object>) node.get("relITComponentToApplication");
+      List<Map<String, Object>> applications = (List<Map<String, Object>>) relITComponentToApplication.get("edges");
+
+      System.out.println("\nBounded Contexts contain Persona:");
+      for (Map<String, Object> applicationEdge : applications) {
+        Map<String, Object> applicationNode = (Map<String, Object>) applicationEdge.get("node");
+        Map<String, Object> applicationFactSheet = (Map<String, Object>) applicationNode.get("factSheet");
+
+        // Get the revision number
+        Map<String, String> revIds = new HashMap<String, String>();
+        revIds.put("id", (String) applicationFactSheet.get("id"));
+
+        Query revQuery = new Query(apiClient, "src/main/resources/rev.graphql", revIds);
+        Map<String, Map<String, Object>> revData = revQuery.execute();
+
+        String rev = revData.get("factSheet").get("rev").toString();
+
+        // Make the mutation
+        Map<String, String> mutationIds = new HashMap<String, String>();
+        mutationIds.put("boundedcontextid", (String) applicationFactSheet.get("id"));
+        mutationIds.put("rev", rev);
+        mutationIds.put("personaid", personaId);
+
+        Query mutationQuery = new Query(apiClient, "src/main/resources/mutation3.graphql", mutationIds);
+        Map<String, Map<String, Object>> mutationData = mutationQuery.execute();
+
+        if (mutationData != null) {
+          System.out.println("  >>> Relation between " + applicationFactSheet.get("displayName")
+                  + " and " + personaDisplayName + " added.");
+        } else {
+          System.out.println("  >>> WARNING: No response for relation mutation .");
+        }
+      }
     }
   }
 
@@ -197,14 +244,14 @@ public class Main {
 
     automation1(apiClient);
 
-    System.out.println("\n==================================================================\n");
+    System.out.println("\n==================================================================");
     System.out.println("AUTOMATION 2");
 
     automation2(apiClient);
 
-    System.out.println("\n==================================================================\n");
+    System.out.println("\n==================================================================");
     System.out.println("AUTOMATION 3");
 
-    //automation3(apiClient);
+    automation3(apiClient);
   }
 }

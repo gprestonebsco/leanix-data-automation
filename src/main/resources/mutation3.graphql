@@ -1,0 +1,22 @@
+mutation {
+  updateFactSheet(id: "#boundedcontextid",
+    rev: #rev, patches: [{op: add, path: "/relApplicationToUserGroup/new_1", value: "{\"factSheetId\":\"#personaid\"}"}]) {
+    factSheet {
+      id
+      displayName
+      ... on Application {
+        relApplicationToUserGroup {
+          edges {
+            node {
+              factSheet{
+                id
+                type
+                displayName
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
