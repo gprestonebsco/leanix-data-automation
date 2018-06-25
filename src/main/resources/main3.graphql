@@ -1,0 +1,28 @@
+{
+  allFactSheets(filter: {
+    facetFilters: [
+      {facetKey: "FactSheetTypes", keys: ["ITComponent"]},
+    ],
+    displayName: "Data Automation Test IT Component"
+    }) {
+    edges {
+      node {
+        id
+        displayName
+        ... on ITComponent {
+          relITComponentToUserGroup {
+            edges {
+              node {
+                id
+                factSheet {
+                  id
+                  displayName
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

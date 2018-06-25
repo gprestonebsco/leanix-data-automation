@@ -46,30 +46,6 @@
               }
             }
           }
-          relInterfaceToDataObject {
-            edges {
-              node {
-                id
-                factSheet {
-                  id
-                  displayName
-                  ... on DataObject {
-                  	relDataObjectToApplication {
-                      edges {
-                        node {
-                          id
-                          factSheet {
-                            id
-                            displayName
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
         }
       }
     }

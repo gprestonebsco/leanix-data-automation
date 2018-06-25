@@ -6,14 +6,8 @@ import java.util.Map;
 
 public class Main {
 
-  public static void main(String[] args) throws Exception {
-    ApiClient apiClient = new ApiClientBuilder()
-            .withBasePath("https://us.leanix.net/services/pathfinder/v1")
-            .withApiToken("d3S2nyQCFVzskhjDf34ChA3jPp2UzMKpgdUv7MN3")
-            .withTokenProviderHost("us.leanix.net")
-            .build();
-
-    Query mainQuery = new Query(apiClient, "src/main/resources/main12.graphql", new HashMap<String, String>());
+  private static void automation1(ApiClient apiClient) throws ApiException {
+    Query mainQuery = new Query(apiClient, "src/main/resources/main1.graphql", new HashMap<String, String>());
     Map<String, Map<String, Object>> mainData = mainQuery.execute();
 
     List<Map<String, Object>> edgeList = (List<Map<String, Object>>) mainData.get("allFactSheets").get("edges");
@@ -86,11 +80,40 @@ public class Main {
           if (mutationData != null) {
             System.out.println("  >>> Relation between " + itFactSheet.get("displayName")
                     + " and " + behaviorProviderDisplayName + " added.");
-          } else {
+          }
+          else {
             System.out.println("  >>> WARNING: No response for relation mutation .");
           }
         }
       }
+
+      System.out.println("\n------------------------------------------------------------------\n");
+    }
+  }
+
+  private static void automation2(ApiClient apiClient) throws ApiException{
+    Query mainQuery = new Query(apiClient, "src/main/resources/main2.graphql", new HashMap<String, String>());
+    Map<String, Map<String, Object>> mainData = mainQuery.execute();
+
+    List<Map<String, Object>> edgeList = (List<Map<String, Object>>) mainData.get("allFactSheets").get("edges");
+
+    // Iterate through all behaviors
+    for (Map<String, Object> edge : edgeList) {
+      Map<String, Object> node = (Map<String, Object>) edge.get("node");
+      System.out.println("Behavior: " + node.get("displayName") + " (" + node.get("id") + ")");
+
+      // Get behavior Provider IDs
+      Map<String, Object> relInterfaceToProviderApplication = (Map<String, Object>)
+              node.get("relInterfaceToProviderApplication");
+      List<Map<String, Object>> applications = (List<Map<String, Object>>)
+              relInterfaceToProviderApplication.get("edges");
+      Map<String, Object> behaviorProviderNode = (Map<String, Object>) applications.get(0).get("node");
+      Map<String, Object> behaviorProviderFactSheet = (Map<String, Object>) behaviorProviderNode.get("factSheet");
+
+      String behaviorProviderDisplayName = (String) behaviorProviderFactSheet.get("displayName");
+      String behaviorProviderId = (String) behaviorProviderFactSheet.get("id");
+
+      System.out.println("Behavior Provider: " + behaviorProviderDisplayName + " (" + behaviorProviderId + ")");
 
       // Look through Data Objects to see if they are each associated with the Behavior Provider
       Map<String, Object> relInterfaceToDataObject = (Map<String, Object>) node.get("relInterfaceToDataObject");
@@ -148,7 +171,40 @@ public class Main {
         }
       }
 
-      System.out.println("\n==================================================================\n");
+      System.out.println("\n------------------------------------------------------------------\n");
     }
+  }
+
+  private static void automation3(ApiClient apiClient) throws ApiException {
+    Query finalQuery = new Query(apiClient, "src/main/resources/main3.graphql", new HashMap<String, String>());
+    Map<String, Map<String, Object>> finalData = finalQuery.execute();
+
+    List<Map<String, Object>> edgeList = (List<Map<String, Object>>) finalData.get("allFactSheets").get("edges");
+    for (Map<String, Object> edge : edgeList) {
+      Map<String, Object> node = (Map<String, Object>) edge.get("node");
+      // TODO: Finish
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    ApiClient apiClient = new ApiClientBuilder()
+            .withBasePath("https://us.leanix.net/services/pathfinder/v1")
+            .withApiToken("d3S2nyQCFVzskhjDf34ChA3jPp2UzMKpgdUv7MN3")
+            .withTokenProviderHost("us.leanix.net")
+            .build();
+
+    System.out.println("AUTOMATION 1");
+
+    automation1(apiClient);
+
+    System.out.println("\n==================================================================\n");
+    System.out.println("AUTOMATION 2");
+
+    automation2(apiClient);
+
+    System.out.println("\n==================================================================\n");
+    System.out.println("AUTOMATION 3");
+
+    //automation3(apiClient);
   }
 }
