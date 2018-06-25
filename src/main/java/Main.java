@@ -1,7 +1,8 @@
-import net.leanix.api.*;
+import com.google.common.graph.Graph;
 import net.leanix.api.common.*;
 import net.leanix.api.models.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,18 +15,12 @@ public class Main {
             .withTokenProviderHost("us.leanix.net")
             .build();
 
-    GraphqlApi graphqlApi = new GraphqlApi(apiClient);
-
-    FileUtils mainFile = new FileUtils("src/main/resources/main.graphql");
-    String mainQuery = mainFile.readlines();
-
-    GraphQLRequest mainRequest = new GraphQLRequest();
-    mainRequest.setQuery(mainQuery);
-
-    GraphQLResult mainResult = graphqlApi.processGraphQL(mainRequest);
+    Query mainQuery = new Query(apiClient, "src/main/resources/main.graphql", new HashMap<String, String>());
+    GraphQLResult mainResult = mainQuery.execute();
 
     if (mainResult.getErrors() != null) {
-      System.out.println("GraphQL response includes errors");
+      System.out.println("ERROR (main):");
+      System.out.println(mainResult.getErrors());
     }
 
     if (mainResult.getData() != null) {
@@ -79,25 +74,45 @@ public class Main {
 
           // If IT Component is not related to the Behavior Provider, create the relation
           if (!containsBehaviousProviderId) {
-            // Doesn't like being in a different static method for some reason
-            // TODO: Make into separate method/class
+            // Get the revision number
+            Map<String, String> revIds = new HashMap<String, String>();
+            revIds.put("id", (String) itFactSheet.get("id"));
 
-            // First find the revision
-            FileUtils revFile = new FileUtils("src/main/resources/rev.graphql");
-            String revQuery = revFile.readlines().replaceAll("#id", (String) itFactSheet.get("id"));
-
-            GraphQLRequest revRequest = new GraphQLRequest();
-            mainRequest.setQuery(revQuery);
-
-            GraphQLResult revResult = graphqlApi.processGraphQL(revRequest);
+            Query revQuery = new Query(apiClient, "src/main/resources/rev.graphql", revIds);
+            GraphQLResult revResult = revQuery.execute();
 
             if (revResult.getErrors() != null) {
-              System.out.println("GraphQL response includes errors");
+              System.out.println("ERROR (rev):");
+              System.out.println(revResult.getErrors());
             }
 
             if (revResult.getData() != null) {
-              Map<String, Map<String, Object>> revData = (Map<String, Map<String, Object>>) mainResult.getData();
-              System.out.println(revData);
+              Map<String, Map<String, Object>> revData = (Map<String, Map<String, Object>>) revResult.getData();
+              String rev = revData.get("factSheet").get("rev").toString();
+
+              // Make the mutation
+              Map<String, String> mutationIds = new HashMap<String, String>();
+              mutationIds.put("itcomponentid", (String) itFactSheet.get("id"));
+              mutationIds.put("rev", rev);
+              mutationIds.put("providerid", behaviorProviderId);
+
+              Query mutationQuery = new Query(apiClient, "src/main/resources/mutation.graphql", mutationIds);
+              GraphQLResult mutationResult = mutationQuery.execute();
+
+              if (mutationResult.getErrors() != null) {
+                System.out.println("ERROR (mutation):");
+                System.out.println(mutationResult.getErrors());
+              }
+
+              if (revResult.getData() != null) {
+                /*
+                Map<String, Map<String, Object>> mutationData = (Map<String, Map<String, Object>>)
+                        mutationResult.getData();
+                System.out.println(mutationData);
+                */
+                System.out.println("Relation between " + itFactSheet.get("displayName")
+                        + " and " + behaviorProviderDisplayName + " added.");
+              }
             }
           }
         }

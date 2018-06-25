@@ -1,6 +1,6 @@
 mutation {
   updateFactSheet(id: "#itcomponentid",
-    rev: #rev, patches: [{op: add, path: "/relITComponentToApplication/new_1", value: "{\"factSheetId\":\"#providerid"}]) {
+    rev: #rev, patches: [{op: add, path: "/relITComponentToApplication/new_1", value: "{\"factSheetId\":\"#providerid\"}"}]) {
     factSheet {
       id
       displayName
