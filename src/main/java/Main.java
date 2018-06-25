@@ -15,7 +15,7 @@ public class Main {
             .withTokenProviderHost("us.leanix.net")
             .build();
 
-    Query mainQuery = new Query(apiClient, "src/main/resources/main.graphql", new HashMap<String, String>());
+    Query mainQuery = new Query(apiClient, "src/main/resources/main12.graphql", new HashMap<String, String>());
     GraphQLResult mainResult = mainQuery.execute();
 
     if (mainResult.getErrors() != null) {
@@ -45,7 +45,7 @@ public class Main {
 
         System.out.println("Behavior Provider: " + behaviorProviderDisplayName + " (" + behaviorProviderId + ")");
 
-        // Look through IT Components to see if they are each associated with the behavior Provider
+        // Look through IT Components to see if they are each associated with the Behavior Provider
         Map<String, Object> relInterfaceToITComponent = (Map<String, Object>) node.get("relInterfaceToITComponent");
         List<Map<String, Object>> itComponents = (List<Map<String, Object>>) relInterfaceToITComponent.get("edges");
 
@@ -59,21 +59,21 @@ public class Main {
                   relITComponentToApplication.get("edges");
 
           // Try to find Behavior Provider ID in the IT Component's Bounded Countexts
-          boolean containsBehaviousProviderId = false;
+          boolean containsBehaviourProviderId = false;
           for (Map<String, Object> applicationEdge : itApplications) {
             Map<String, Object> applicationNode = (Map<String, Object>) applicationEdge.get("node");
             Map<String, Object> applicationFactSheet = (Map<String, Object>) applicationNode.get("factSheet");
             if (applicationFactSheet.get("id").equals(behaviorProviderId)) {
-              containsBehaviousProviderId = true;
+              containsBehaviourProviderId = true;
               break;
             }
           }
 
           System.out.println(itFactSheet.get("displayName") + " (" + itFactSheet.get("id") + "): "
-                  + containsBehaviousProviderId);
+                  + containsBehaviourProviderId);
 
           // If IT Component is not related to the Behavior Provider, create the relation
-          if (!containsBehaviousProviderId) {
+          if (!containsBehaviourProviderId) {
             // Get the revision number
             Map<String, String> revIds = new HashMap<String, String>();
             revIds.put("id", (String) itFactSheet.get("id"));
@@ -96,11 +96,11 @@ public class Main {
               mutationIds.put("rev", rev);
               mutationIds.put("providerid", behaviorProviderId);
 
-              Query mutationQuery = new Query(apiClient, "src/main/resources/mutation.graphql", mutationIds);
+              Query mutationQuery = new Query(apiClient, "src/main/resources/mutation1.graphql", mutationIds);
               GraphQLResult mutationResult = mutationQuery.execute();
 
               if (mutationResult.getErrors() != null) {
-                System.out.println("ERROR (mutation):");
+                System.out.println("ERROR (mutation1):");
                 System.out.println(mutationResult.getErrors());
               }
 
@@ -116,6 +116,79 @@ public class Main {
             }
           }
         }
+
+        // Look through Data Objects to see if they are each associated with the Behavior Provider
+        Map<String, Object> relInterfaceToDataObject = (Map<String, Object>) node.get("relInterfaceToDataObject");
+        List<Map<String, Object>> dataObjects = (List<Map<String, Object>>) relInterfaceToDataObject.get("edges");
+
+        System.out.println("\nData Objects contain Behavior Provider:");
+        for (Map<String, Object> dataEdge : dataObjects) {
+          Map<String, Object> dataNode = (Map<String, Object>) dataEdge.get("node");
+          Map<String, Object> dataFactSheet = (Map<String, Object>) dataNode.get("factSheet");
+          Map<String, Object> relITComponentToApplication = (Map<String, Object>)
+                  dataFactSheet.get("relDataObjectToApplication");
+          List<Map<String, Object>> dataApplications = (List<Map<String, Object>>)
+                  relITComponentToApplication.get("edges");
+
+          // Try to find Behavior Provider ID in the IT Component's Bounded Countexts
+          boolean containsBehaviourProviderId = false;
+          for (Map<String, Object> applicationEdge : dataApplications) {
+            Map<String, Object> applicationNode = (Map<String, Object>) applicationEdge.get("node");
+            Map<String, Object> applicationFactSheet = (Map<String, Object>) applicationNode.get("factSheet");
+            if (applicationFactSheet.get("id").equals(behaviorProviderId)) {
+              containsBehaviourProviderId = true;
+              break;
+            }
+          }
+
+          System.out.println(dataFactSheet.get("displayName") + " (" + dataFactSheet.get("id") + "): "
+                  + containsBehaviourProviderId);
+
+          // If Data Object is not related to the Behavior Provider, create the relation
+          if (!containsBehaviourProviderId) {
+            // Get the revision number
+            Map<String, String> revIds = new HashMap<String, String>();
+            revIds.put("id", (String) dataFactSheet.get("id"));
+
+            Query revQuery = new Query(apiClient, "src/main/resources/rev.graphql", revIds);
+            GraphQLResult revResult = revQuery.execute();
+
+            if (revResult.getErrors() != null) {
+              System.out.println("ERROR (rev):");
+              System.out.println(revResult.getErrors());
+            }
+
+            if (revResult.getData() != null) {
+              Map<String, Map<String, Object>> revData = (Map<String, Map<String, Object>>) revResult.getData();
+              String rev = revData.get("factSheet").get("rev").toString();
+
+              // Make the mutation
+              Map<String, String> mutationIds = new HashMap<String, String>();
+              mutationIds.put("dataobjectid", (String) dataFactSheet.get("id"));
+              mutationIds.put("rev", rev);
+              mutationIds.put("providerid", behaviorProviderId);
+
+              Query mutationQuery = new Query(apiClient, "src/main/resources/mutation2.graphql", mutationIds);
+              GraphQLResult mutationResult = mutationQuery.execute();
+
+              if (mutationResult.getErrors() != null) {
+                System.out.println("ERROR (mutation2):");
+                System.out.println(mutationResult.getErrors());
+              }
+
+              if (revResult.getData() != null) {
+                /*
+                Map<String, Map<String, Object>> mutationData = (Map<String, Map<String, Object>>)
+                        mutationResult.getData();
+                System.out.println(mutationData);
+                */
+                System.out.println("Relation between " + dataFactSheet.get("displayName")
+                        + " and " + behaviorProviderDisplayName + " added.");
+              }
+            }
+          }
+        }
+
         System.out.println("\n==================================================================\n");
       }
     }

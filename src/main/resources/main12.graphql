@@ -11,6 +11,17 @@
         id
         displayName
         ... on Interface {
+          relInterfaceToProviderApplication {
+            edges {
+              node {
+                id
+                factSheet {
+                  id
+                  displayName
+                }
+              }
+            }
+          }
           relInterfaceToITComponent {
             edges {
               node {
@@ -19,7 +30,7 @@
                   id
                   displayName
                   ... on ITComponent {
-                  	relITComponentToApplication {
+                    relITComponentToApplication {
                       edges {
                         node {
                           id
@@ -35,13 +46,26 @@
               }
             }
           }
-          relInterfaceToProviderApplication {
+          relInterfaceToDataObject {
             edges {
               node {
                 id
                 factSheet {
                   id
                   displayName
+                  ... on DataObject {
+                  	relDataObjectToApplication {
+                      edges {
+                        node {
+                          id
+                          factSheet {
+                            id
+                            displayName
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
