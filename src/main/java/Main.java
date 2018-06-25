@@ -83,11 +83,6 @@ public class Main {
           Query mutationQuery = new Query(apiClient, "src/main/resources/mutation1.graphql", mutationIds);
           Map<String, Map<String, Object>> mutationData = mutationQuery.execute();
 
-          /*
-          Map<String, Map<String, Object>> mutationData = (Map<String, Map<String, Object>>)
-                  mutationResult.getData();
-          System.out.println(mutationData);
-          */
           if (mutationData != null) {
             System.out.println("  >>> Relation between " + itFactSheet.get("displayName")
                     + " and " + behaviorProviderDisplayName + " added.");
@@ -144,11 +139,6 @@ public class Main {
           Query mutationQuery = new Query(apiClient, "src/main/resources/mutation2.graphql", mutationIds);
           Map<String, Map<String, Object>> mutationData = mutationQuery.execute();
 
-          /*
-          Map<String, Map<String, Object>> mutationData = (Map<String, Map<String, Object>>)
-                  mutationResult.getData();
-          System.out.println(mutationData);
-          */
           if (mutationData != null) {
             System.out.println("  >>> Relation between " + dataFactSheet.get("displayName")
                     + " and " + behaviorProviderDisplayName + " added.");
@@ -160,15 +150,5 @@ public class Main {
 
       System.out.println("\n==================================================================\n");
     }
-
-    /*
-    Map<String, Map<String, Object>> mainData = (Map<String, Map<String, Object>>) mainResult.getData();
-    List<Map<String, Object>> edgeList = (List<Map<String, Object>>) mainData.get("allFactSheets").get("edges");
-
-    for (Map<String, Object> edge : edgeList) {
-      Map<String, Object> node = (Map<String, Object>) edge.get("node");
-      System.out.println(node.get("displayName"));
-    }
-    */
   }
 }
