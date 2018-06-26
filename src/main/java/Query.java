@@ -1,4 +1,3 @@
-import io.swagger.annotations.Api;
 import net.leanix.api.*;
 import net.leanix.api.common.*;
 import net.leanix.api.models.*;
