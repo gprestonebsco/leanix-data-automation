@@ -8,7 +8,7 @@ class FileUtils {
     this.fileName = fileName;
   }
 
-  String readlines() {
+  String read() {
     String line;
     StringBuilder contents = new StringBuilder();
     InputStream in = getClass().getResourceAsStream(this.fileName);

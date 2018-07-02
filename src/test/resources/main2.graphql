@@ -1,0 +1,53 @@
+{
+  allFactSheets(filter: {
+    facetFilters: [
+      {facetKey: "FactSheetTypes", keys: ["Interface"]},
+      {facetKey: "relInterfaceToDataObject", operator: NOR, keys: ["__missing__"]}
+    ],
+    displayName: "Data Automation Test Behavior"
+    }) {
+    edges {
+      node {
+        id
+        displayName
+        ... on Interface {
+          relInterfaceToProviderApplication {
+            edges {
+              node {
+                id
+                factSheet {
+                  id
+                  displayName
+                }
+              }
+            }
+          }
+          relInterfaceToDataObject {
+            edges {
+              node {
+                id
+                factSheet {
+                  id
+                  displayName
+                  ... on DataObject {
+                  	relDataObjectToApplication {
+                      edges {
+                        node {
+                          id
+                          factSheet {
+                            id
+                            displayName
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

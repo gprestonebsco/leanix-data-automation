@@ -13,7 +13,7 @@ class Query {
 
     // Read query from file
     FileUtils file = new FileUtils(path);
-    this.query = file.readlines();
+    this.query = file.read();
 
     // Replace given identifiers
     for (String key : identifiers.keySet()) {

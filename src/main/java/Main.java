@@ -212,7 +212,7 @@ public class Main {
       test.execute();
     }
     catch (ApiException e) {
-      System.out.println("ERROR: Invalid API token.");
+      System.out.println("Invalid API token.");
       System.exit(1);
     }
 

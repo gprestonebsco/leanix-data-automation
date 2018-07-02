@@ -1,0 +1,10 @@
+{
+  allFactSheets {
+    edges {
+      node {
+        id
+        type
+      }
+    }
+  }
+}

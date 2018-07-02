@@ -2,4 +2,4 @@
 leanixdataautomation.iml
 target/
 src/main/resources/*3.graphql
-apitoken.txt
+src/test/resources/apitoken.txt
