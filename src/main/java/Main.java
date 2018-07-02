@@ -202,9 +202,19 @@ public class Main {
   public static void main(String[] args) throws Exception {
     ApiClient apiClient = new ApiClientBuilder()
             .withBasePath("https://us.leanix.net/services/pathfinder/v1")
-            .withApiToken("d3S2nyQCFVzskhjDf34ChA3jPp2UzMKpgdUv7MN3")
+            .withApiToken(args[0])
             .withTokenProviderHost("us.leanix.net")
             .build();
+
+    // Test API access
+    Query test = new Query(apiClient, "test.graphql", new HashMap<String, String>());
+    try {
+      test.execute();
+    }
+    catch (ApiException e) {
+      System.out.println("ERROR: Invalid API token.");
+      System.exit(1);
+    }
 
     System.out.println("\n==================================================================");
     System.out.println("AUTOMATION 1");
