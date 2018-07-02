@@ -1,7 +1,4 @@
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.*;
 
 class FileUtils {
 
@@ -14,17 +11,16 @@ class FileUtils {
   String readlines() {
     String line;
     StringBuilder contents = new StringBuilder();
+    InputStream in = getClass().getResourceAsStream(this.fileName);
 
     try {
-      FileReader fileReader =  new FileReader(this.fileName);
-      BufferedReader bufferedReader =
-              new BufferedReader(fileReader);
+      BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
-      while((line = bufferedReader.readLine()) != null) {
+      while((line = reader.readLine()) != null) {
         contents.append(line);
       }
 
-      bufferedReader.close();
+      reader.close();
     }
     catch(FileNotFoundException ex) {
       System.out.println(

@@ -8,7 +8,7 @@ import java.util.Map;
 public class Main {
 
   private static void automation1(ApiClient apiClient) throws ApiException {
-    Query mainQuery = new Query(apiClient, "src/main/resources/main1.graphql", new HashMap<String, String>());
+    Query mainQuery = new Query(apiClient, "main1.graphql", new HashMap<String, String>());
     Map<String, Map<String, Object>> mainData = mainQuery.execute();
 
     List<Map<String, Object>> edgeList = (List<Map<String, Object>>) mainData.get("allFactSheets").get("edges");
@@ -75,7 +75,7 @@ public class Main {
             Map<String, String> revIds = new HashMap<String, String>();
             revIds.put("id", itComponentId);
 
-            Query revQuery = new Query(apiClient, "src/main/resources/rev.graphql", revIds);
+            Query revQuery = new Query(apiClient, "rev.graphql", revIds);
             Map<String, Map<String, Object>> revData = revQuery.execute();
 
             String rev = revData.get("factSheet").get("rev").toString();
@@ -86,7 +86,7 @@ public class Main {
             mutationIds.put("rev", rev);
             mutationIds.put("providerid", behaviorProviderId);
 
-            Query mutationQuery = new Query(apiClient, "src/main/resources/mutation1.graphql", mutationIds);
+            Query mutationQuery = new Query(apiClient, "mutation1.graphql", mutationIds);
             Map<String, Map<String, Object>> mutationData = mutationQuery.execute();
 
             if (mutationData != null) {
@@ -104,7 +104,7 @@ public class Main {
   }
 
   private static void automation2(ApiClient apiClient) throws ApiException{
-    Query mainQuery = new Query(apiClient, "src/main/resources/main2.graphql", new HashMap<String, String>());
+    Query mainQuery = new Query(apiClient, "main2.graphql", new HashMap<String, String>());
     Map<String, Map<String, Object>> mainData = mainQuery.execute();
 
     List<Map<String, Object>> edgeList = (List<Map<String, Object>>) mainData.get("allFactSheets").get("edges");
@@ -171,7 +171,7 @@ public class Main {
             Map<String, String> revIds = new HashMap<String, String>();
             revIds.put("id", dataObjectId);
 
-            Query revQuery = new Query(apiClient, "src/main/resources/rev.graphql", revIds);
+            Query revQuery = new Query(apiClient, "rev.graphql", revIds);
             Map<String, Map<String, Object>> revData = revQuery.execute();
 
             String rev = revData.get("factSheet").get("rev").toString();
@@ -182,7 +182,7 @@ public class Main {
             mutationIds.put("rev", rev);
             mutationIds.put("providerid", behaviorProviderId);
 
-            Query mutationQuery = new Query(apiClient, "src/main/resources/mutation2.graphql", mutationIds);
+            Query mutationQuery = new Query(apiClient, "mutation2.graphql", mutationIds);
             Map<String, Map<String, Object>> mutationData = mutationQuery.execute();
 
             if (mutationData != null) {
