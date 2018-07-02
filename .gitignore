@@ -1,3 +1,4 @@
 .idea/
 leanixdataautomation.iml
 target/
+src/main/resources/*3.graphql
