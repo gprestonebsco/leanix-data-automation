@@ -1,5 +1,5 @@
 {
-  factSheet(id: "#id") {
+  factSheet(id: "%id") {
     rev
   }
 }

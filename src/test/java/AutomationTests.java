@@ -36,18 +36,18 @@ class AutomationTests {
     }
   }
 
-  /*
   @Test
   void testAutomation1() {
-    System.out.println("\n==================================================================");
-    System.out.println("AUTOMATION 1");
+    // If relationships exist, remove them
+    Query test = new Query(apiClient, "test.graphql", new HashMap<String, String>());
+    try {
+      test.execute();
+    }
+    catch (ApiException e) {
+      fail();
+    }
 
-    automation1(apiClient);
-
-    System.out.println("\n==================================================================");
-    System.out.println("AUTOMATION 2");
-
-    automation2(apiClient);
+    // Execute query/mutation
+    // Check if desired relationships exist
   }
-  */
 }

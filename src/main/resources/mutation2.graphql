@@ -1,6 +1,6 @@
 mutation {
-  updateFactSheet(id: "#dataobjectid",
-    rev: #rev, patches: [{op: add, path: "/relDataObjectToApplication/new_1", value: "{\"factSheetId\":\"#providerid\"}"}]) {
+  updateFactSheet(id: "%dataobjectid",
+    rev: %rev, patches: [{op: add, path: "/relDataObjectToApplication/new_1", value: "{\"factSheetId\":\"%providerid\"}"}]) {
     factSheet {
       id
       displayName

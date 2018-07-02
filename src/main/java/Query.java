@@ -17,7 +17,7 @@ class Query {
 
     // Replace given identifiers
     for (String key : identifiers.keySet()) {
-      this.query = this.query.replaceAll("#" + key, identifiers.get(key));
+      this.query = this.query.replaceAll("%" + key, identifiers.get(key));
     }
   }
 

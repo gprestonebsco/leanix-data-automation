@@ -1,0 +1,26 @@
+{
+  factSheet(id: "d960c788-f127-4ed4-93ab-be7e84fa0ce8") {
+    ... on DataObject {
+      relDataObjectToApplication {
+        edges {
+          node {
+            factSheet {
+              id
+            }
+          }
+        }
+      }
+    }
+    ... on ITComponent {
+      relITComponentToApplication {
+        edges {
+          node {
+            factSheet {
+              id
+            }
+          }
+        }
+      }
+    }
+  }
+}
