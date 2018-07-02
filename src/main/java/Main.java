@@ -1,5 +1,6 @@
 import net.leanix.api.common.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,6 +98,9 @@ public class Main {
 
     List<Map<String, Object>> edgeList = (List<Map<String, Object>>) mainData.get("allFactSheets").get("edges");
 
+    // Keep track of newly created relations to not create them twice
+    List<String> editedDataObjects = new ArrayList<String>();
+
     // Iterate through all behaviors
     for (Map<String, Object> edge : edgeList) {
       System.out.println("------------------------------------------------------------------\n");
@@ -109,149 +113,74 @@ public class Main {
               node.get("relInterfaceToProviderApplication");
       List<Map<String, Object>> applications = (List<Map<String, Object>>)
               relInterfaceToProviderApplication.get("edges");
-      Map<String, Object> behaviorProviderNode = (Map<String, Object>) applications.get(0).get("node");
-      Map<String, Object> behaviorProviderFactSheet = (Map<String, Object>) behaviorProviderNode.get("factSheet");
 
-      String behaviorProviderDisplayName = (String) behaviorProviderFactSheet.get("displayName");
-      String behaviorProviderId = (String) behaviorProviderFactSheet.get("id");
+      if (applications.size() > 0) {
+        Map<String, Object> behaviorProviderNode = (Map<String, Object>) applications.get(0).get("node");
+        Map<String, Object> behaviorProviderFactSheet = (Map<String, Object>) behaviorProviderNode.get("factSheet");
 
-      System.out.println("Behavior Provider: " + behaviorProviderDisplayName + " (" + behaviorProviderId + ")");
+        String behaviorProviderDisplayName = (String) behaviorProviderFactSheet.get("displayName");
+        String behaviorProviderId = (String) behaviorProviderFactSheet.get("id");
 
-      // Look through Data Objects to see if they are each associated with the Behavior Provider
-      Map<String, Object> relInterfaceToDataObject = (Map<String, Object>) node.get("relInterfaceToDataObject");
-      List<Map<String, Object>> dataObjects = (List<Map<String, Object>>) relInterfaceToDataObject.get("edges");
+        System.out.println("Behavior Provider: " + behaviorProviderDisplayName + " (" + behaviorProviderId + ")");
 
-      System.out.println("\nData Objects contain Behavior Provider:");
-      for (Map<String, Object> dataEdge : dataObjects) {
-        Map<String, Object> dataNode = (Map<String, Object>) dataEdge.get("node");
-        Map<String, Object> dataFactSheet = (Map<String, Object>) dataNode.get("factSheet");
-        Map<String, Object> relITComponentToApplication = (Map<String, Object>)
-                dataFactSheet.get("relDataObjectToApplication");
-        List<Map<String, Object>> dataApplications = (List<Map<String, Object>>)
-                relITComponentToApplication.get("edges");
+        // Look through Data Objects to see if they are each associated with the Behavior Provider
+        Map<String, Object> relInterfaceToDataObject = (Map<String, Object>) node.get("relInterfaceToDataObject");
+        List<Map<String, Object>> dataObjects = (List<Map<String, Object>>) relInterfaceToDataObject.get("edges");
 
-        // Try to find Behavior Provider ID in the IT Component's Bounded Countexts
-        boolean containsBehaviourProviderId = false;
-        for (Map<String, Object> applicationEdge : dataApplications) {
-          Map<String, Object> applicationNode = (Map<String, Object>) applicationEdge.get("node");
-          Map<String, Object> applicationFactSheet = (Map<String, Object>) applicationNode.get("factSheet");
-          if (applicationFactSheet.get("id").equals(behaviorProviderId)) {
-            containsBehaviourProviderId = true;
-            break;
+        System.out.println("\nData Objects contain Behavior Provider:");
+        for (Map<String, Object> dataEdge : dataObjects) {
+          Map<String, Object> dataNode = (Map<String, Object>) dataEdge.get("node");
+          Map<String, Object> dataFactSheet = (Map<String, Object>) dataNode.get("factSheet");
+          Map<String, Object> relITComponentToApplication = (Map<String, Object>)
+                  dataFactSheet.get("relDataObjectToApplication");
+          List<Map<String, Object>> dataApplications = (List<Map<String, Object>>)
+                  relITComponentToApplication.get("edges");
+
+          // Try to find Behavior Provider ID in the IT Component's Bounded Countexts
+          boolean containsBehaviourProviderId = false;
+          for (Map<String, Object> applicationEdge : dataApplications) {
+            Map<String, Object> applicationNode = (Map<String, Object>) applicationEdge.get("node");
+            Map<String, Object> applicationFactSheet = (Map<String, Object>) applicationNode.get("factSheet");
+            if (applicationFactSheet.get("id").equals(behaviorProviderId)) {
+              containsBehaviourProviderId = true;
+              break;
+            }
           }
-        }
+          String dataObjectId = (String) dataFactSheet.get("id");
+          String dataObjectDisplayName = (String) dataFactSheet.get("displayName");
+          boolean editNeeded = !(containsBehaviourProviderId || editedDataObjects.contains(dataObjectId));
 
-        System.out.println("* " + dataFactSheet.get("displayName") + " (" + dataFactSheet.get("id") + "): "
-                + containsBehaviourProviderId);
+          System.out.println("* " + dataFactSheet.get("displayName") + " (" + dataObjectId + "): "
+                  + !editNeeded);
 
-        // If Data Object is not related to the Behavior Provider, create the relation
-        if (!containsBehaviourProviderId) {
-          // Get the revision number
-          Map<String, String> revIds = new HashMap<String, String>();
-          revIds.put("id", (String) dataFactSheet.get("id"));
+          // If Data Object is not related to the Behavior Provider, create the relation
+          if (editNeeded) {
+            // Get the revision number
+            Map<String, String> revIds = new HashMap<String, String>();
+            revIds.put("id", dataObjectId);
 
-          Query revQuery = new Query(apiClient, "src/main/resources/rev.graphql", revIds);
-          Map<String, Map<String, Object>> revData = revQuery.execute();
+            Query revQuery = new Query(apiClient, "src/main/resources/rev.graphql", revIds);
+            Map<String, Map<String, Object>> revData = revQuery.execute();
 
-          String rev = revData.get("factSheet").get("rev").toString();
+            String rev = revData.get("factSheet").get("rev").toString();
 
-          // Make the mutation
-          Map<String, String> mutationIds = new HashMap<String, String>();
-          mutationIds.put("dataobjectid", (String) dataFactSheet.get("id"));
-          mutationIds.put("rev", rev);
-          mutationIds.put("providerid", behaviorProviderId);
+            // Make the mutation
+            Map<String, String> mutationIds = new HashMap<String, String>();
+            mutationIds.put("dataobjectid", dataObjectId);
+            mutationIds.put("rev", rev);
+            mutationIds.put("providerid", behaviorProviderId);
 
-          Query mutationQuery = new Query(apiClient, "src/main/resources/mutation2.graphql", mutationIds);
-          Map<String, Map<String, Object>> mutationData = mutationQuery.execute();
+            Query mutationQuery = new Query(apiClient, "src/main/resources/mutation2.graphql", mutationIds);
+            Map<String, Map<String, Object>> mutationData = mutationQuery.execute();
 
-          if (mutationData != null) {
-            System.out.println("  >>> Relation between " + dataFactSheet.get("displayName")
-                    + " and " + behaviorProviderDisplayName + " added.");
-          }
-          else {
-            System.out.println("  >>> WARNING: No response for relation mutation .");
-          }
-        }
-      }
-    }
-  }
-
-  // NOTE: Not sure if this actually does the right thing
-  private static void automation3(ApiClient apiClient) throws ApiException {
-    Query finalQuery = new Query(apiClient, "src/main/resources/main3.graphql", new HashMap<String, String>());
-    Map<String, Map<String, Object>> finalData = finalQuery.execute();
-
-    // Iterate through the queried IT Components
-    List<Map<String, Object>> edgeList = (List<Map<String, Object>>) finalData.get("allFactSheets").get("edges");
-    for (Map<String, Object> edge : edgeList) {
-      System.out.println("------------------------------------------------------------------\n");
-
-      Map<String, Object> node = (Map<String, Object>) edge.get("node");
-      System.out.println("IT Component: " + node.get("displayName") + " (" + node.get("id") + ")");
-
-      Map<String, Object> relITComponentToUserGroup = (Map<String, Object>) node.get("relITComponentToUserGroup");
-      List<Map<String, Object>> personas = (List<Map<String, Object>>)
-              relITComponentToUserGroup.get("edges");
-      Map<String, Object> personaNode = (Map<String, Object>) personas.get(0).get("node");
-      Map<String, Object> personaFactSheet = (Map<String, Object>) personaNode.get("factSheet");
-
-      String personaDisplayName = (String) personaFactSheet.get("displayName");
-      String personaId = (String) personaFactSheet.get("id");
-
-      // Look through Bounded Contexts to see if they are each associated with the Persona
-      Map<String, Object> relITComponentToApplication = (Map<String, Object>) node.get("relITComponentToApplication");
-      List<Map<String, Object>> applications = (List<Map<String, Object>>) relITComponentToApplication.get("edges");
-
-      System.out.println("\nBounded Contexts contain Persona:");
-      for (Map<String, Object> applicationEdge : applications) {
-        Map<String, Object> applicationNode = (Map<String, Object>) applicationEdge.get("node");
-        Map<String, Object> applicationFactSheet = (Map<String, Object>) applicationNode.get("factSheet");
-
-        Map<String, Object> relApplicationToUserGroup = (Map<String, Object>)
-                applicationFactSheet.get("relApplicationToUserGroup");
-        List<Map<String, Object>> personaEdges = (List<Map<String, Object>>)
-                relApplicationToUserGroup.get("edges");
-
-        // Check if Bounded Context has relation to desired Persona
-        boolean containsPersona = false;
-        for (Map<String, Object> personaEdge : personaEdges) {
-          Map<String, Object> currentNode = (Map<String, Object>) personaEdge.get("node");
-          Map<String, Object> currentFactSheet = (Map<String, Object>) currentNode.get("factSheet");
-          if (currentFactSheet.get("id").equals(personaId)) {
-            containsPersona = true;
-            break;
-          }
-        }
-
-        System.out.println("* " + applicationFactSheet.get("displayName")
-                + " (" + applicationFactSheet.get("id") + "): " + containsPersona);
-
-        // If Bounded Context isn't related to desired Persona, fix that
-        if (!containsPersona) {
-          // Get the revision number
-          Map<String, String> revIds = new HashMap<String, String>();
-          revIds.put("id", (String) applicationFactSheet.get("id"));
-
-          Query revQuery = new Query(apiClient, "src/main/resources/rev.graphql", revIds);
-          Map<String, Map<String, Object>> revData = revQuery.execute();
-
-          String rev = revData.get("factSheet").get("rev").toString();
-
-          // Make the mutation
-          Map<String, String> mutationIds = new HashMap<String, String>();
-          mutationIds.put("boundedcontextid", (String) applicationFactSheet.get("id"));
-          mutationIds.put("rev", rev);
-          mutationIds.put("personaid", personaId);
-
-          Query mutationQuery = new Query(apiClient, "src/main/resources/mutation3.graphql", mutationIds);
-          Map<String, Map<String, Object>> mutationData = mutationQuery.execute();
-
-          if (mutationData != null) {
-            System.out.println("  >>> Relation between " + applicationFactSheet.get("displayName")
-                    + " and " + personaDisplayName + " added.");
-          }
-          else {
-            System.out.println("  >>> WARNING: No response for relation mutation .");
+            if (mutationData != null) {
+              editedDataObjects.add(dataObjectId);
+              System.out.println("  >>> Relation between " + dataObjectDisplayName
+                      + " and " + behaviorProviderDisplayName + " added.");
+            }
+            else {
+              System.out.println("  >>> WARNING: No response for relation mutation .");
+            }
           }
         }
       }
@@ -274,10 +203,5 @@ public class Main {
     System.out.println("AUTOMATION 2");
 
     automation2(apiClient);
-
-    System.out.println("\n==================================================================");
-    System.out.println("AUTOMATION 3");
-
-    automation3(apiClient);
   }
 }
