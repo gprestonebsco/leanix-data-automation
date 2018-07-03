@@ -16,6 +16,8 @@
         edges {
           node {
             factSheet {
+              id
+              type
               ... on DataObject {
                 relDataObjectToApplication {
                   edges {
@@ -36,6 +38,8 @@
         edges {
           node {
             factSheet {
+              id
+              type
                ... on ITComponent {
                   relITComponentToApplication {
                     edges {

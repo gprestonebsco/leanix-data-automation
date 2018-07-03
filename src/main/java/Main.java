@@ -7,7 +7,8 @@ import java.util.Map;
 
 public class Main {
 
-  private static void automation1(ApiClient apiClient) throws ApiException {
+  // Return a Map of Provider ID (String) -> List<mutation query data> (Map<String, Map<String, Object>>) for checking
+  static Map<String, List<Map<String, Map<String, Object>>>> automation1(ApiClient apiClient) throws ApiException {
     Query mainQuery = new Query(apiClient, "main1.graphql", new HashMap<String, String>());
     Map<String, Map<String, Object>> mainData = mainQuery.execute();
 
@@ -15,6 +16,10 @@ public class Main {
 
     // Keep track of newly created relations to not create them twice
     List<String> editedItComponents = new ArrayList<String>();
+
+    // Map Behavior Provider ID to a list of return values of mutations involving that Provider
+    Map<String, List<Map<String, Map<String, Object>>>> ret =
+            new HashMap<String, List<Map<String, Map<String, Object>>>>();
 
     // Iterate through all behaviors
     for (Map<String, Object> edge : edgeList) {
@@ -91,6 +96,11 @@ public class Main {
 
             if (mutationData != null) {
               editedItComponents.add(itComponentId);
+              if (!ret.containsKey(behaviorProviderId)) {
+                ret.put(behaviorProviderId, new ArrayList<Map<String, Map<String, Object>>>());
+              }
+              ret.get(behaviorProviderId).add(mutationData);
+
               System.out.println("  >>> Relation between " + itComponentDisplayName
                       + " and " + behaviorProviderDisplayName + " added.");
             }
@@ -101,9 +111,10 @@ public class Main {
         }
       }
     }
+    return ret;
   }
 
-  private static void automation2(ApiClient apiClient) throws ApiException{
+  static void automation2(ApiClient apiClient) throws ApiException{
     Query mainQuery = new Query(apiClient, "main2.graphql", new HashMap<String, String>());
     Map<String, Map<String, Object>> mainData = mainQuery.execute();
 
