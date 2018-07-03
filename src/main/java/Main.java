@@ -23,7 +23,7 @@ public class Main {
       Map<String, Object> node = (Map<String, Object>) edge.get("node");
       System.out.println("Behavior: " + node.get("displayName") + " (" + node.get("id") + ")");
 
-      // Get behavior Provider IDs
+      // Get Behavior Provider ID
       Map<String, Object> relInterfaceToProviderApplication = (Map<String, Object>)
               node.get("relInterfaceToProviderApplication");
       List<Map<String, Object>> applications = (List<Map<String, Object>>)
@@ -119,7 +119,7 @@ public class Main {
       Map<String, Object> node = (Map<String, Object>) edge.get("node");
       System.out.println("Behavior: " + node.get("displayName") + " (" + node.get("id") + ")");
 
-      // Get behavior Provider IDs
+      // Get Behavior Provider ID
       Map<String, Object> relInterfaceToProviderApplication = (Map<String, Object>)
               node.get("relInterfaceToProviderApplication");
       List<Map<String, Object>> applications = (List<Map<String, Object>>)

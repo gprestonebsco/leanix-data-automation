@@ -1,7 +1,9 @@
 {
   factSheet(id: "d960c788-f127-4ed4-93ab-be7e84fa0ce8") {
-    ... on DataObject {
-      relDataObjectToApplication {
+    id
+    type
+    ... on Interface {
+      relInterfaceToProviderApplication {
         edges {
           node {
             factSheet {
@@ -10,13 +12,43 @@
           }
         }
       }
-    }
-    ... on ITComponent {
-      relITComponentToApplication {
+      relInterfaceToDataObject {
         edges {
           node {
             factSheet {
-              id
+              ... on DataObject {
+                relDataObjectToApplication {
+                  edges {
+                    node {
+                      id
+                      factSheet {
+                        id
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      relInterfaceToITComponent {
+        edges {
+          node {
+            factSheet {
+               ... on ITComponent {
+                  relITComponentToApplication {
+                    edges {
+                      node {
+                        id
+                        factSheet {
+                          id
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
