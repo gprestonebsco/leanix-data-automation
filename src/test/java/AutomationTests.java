@@ -41,6 +41,10 @@ class AutomationTests {
   }
 
   @Test
+  // Makes sure Data Automation Test Provider is correctly related to Data Automation Test
+  // IT Component after automation1 due to relations to Data Automation Test Behavior.
+  // Also makes sure no errors occur when Data Automation Test Behavior 2 is reached,
+  // which would try to create the same relations as Data Automation Test Behavior.
   synchronized void testAutomation1() throws InterruptedException {
     // If relationships exist, remove them
     this.resetType(true);
@@ -69,6 +73,10 @@ class AutomationTests {
   }
 
   @Test
+  // Makes sure Data Automation Test Provider is correctly related to Data Automation Test
+  // Data Object after automation1 due to relations to Data Automation Test Behavior.
+  // Also makes sure no errors occur when Data Automation Test Behavior 2 is reached,
+  // which would try to create the same relations as Data Automation Test Behavior.
   synchronized void testAutomation2() throws InterruptedException {
     // If relationships exist, remove them
     this.resetType(false);
@@ -99,7 +107,7 @@ class AutomationTests {
   // Remove existing ITComponent -> Behavior Provider or DataObject -> Behavior Provider relations.
   // resetType(true) indicates ITComponent, resetType(false) indicates DataObject.
   // Returns a boolean to indicate the end of the method execution.
-  private synchronized void resetType(boolean itComponent) {
+  private void resetType(boolean itComponent) {
     // TODO: Create abstraction that allows for faster traversal of the query result
     String type;
     if (itComponent) {
@@ -110,7 +118,7 @@ class AutomationTests {
     }
     System.out.println("Reset " + type + "\n");
 
-    Query check = new Query(apiClient, "checkrelations.graphql", new HashMap<String, String>());
+    Query check = new Query(this.apiClient, "checkrelations.graphql", new HashMap<String, String>());
     Map<String, Map<String, Object>> checkData = new HashMap<String, Map<String, Object>>();
     try {
       checkData = check.execute();
@@ -118,6 +126,7 @@ class AutomationTests {
     catch (ApiException e) {
       fail();
     }
+
     // Get Behavior Provider ID
     Map<String, Object> relInterfaceToProviderApplication = (Map<String, Object>)
             checkData.get("factSheet").get("relInterfaceToProviderApplication");
@@ -162,7 +171,7 @@ class AutomationTests {
             Map<String, String> revIds = new HashMap<String, String>();
             revIds.put("id", typeId);
 
-            Query revQuery = new Query(apiClient, "rev.graphql", revIds);
+            Query revQuery = new Query(this.apiClient, "rev.graphql", revIds);
             Map<String, Map<String, Object>> revData = new HashMap<String, Map<String, Object>>();
             try {
               revData = revQuery.execute();
@@ -181,7 +190,7 @@ class AutomationTests {
             removeIds.put("relid", relationId);
             removeIds.put("appid", applicationId);
 
-            Query removeQuery = new Query(apiClient, "remove.graphql", removeIds);
+            Query removeQuery = new Query(this.apiClient, "remove.graphql", removeIds);
             try {
               removeQuery.execute();
               System.out.println(">>> Relation between " + typeName + " and " + applicationName + " removed.");
