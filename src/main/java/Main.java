@@ -114,7 +114,7 @@ public class Main {
     return ret;
   }
 
-  static void automation2(ApiClient apiClient) throws ApiException{
+  static Map<String, List<Map<String, Map<String, Object>>>> automation2(ApiClient apiClient) throws ApiException {
     Query mainQuery = new Query(apiClient, "main2.graphql", new HashMap<String, String>());
     Map<String, Map<String, Object>> mainData = mainQuery.execute();
 
@@ -122,6 +122,10 @@ public class Main {
 
     // Keep track of newly created relations to not create them twice
     List<String> editedDataObjects = new ArrayList<String>();
+
+    // Map Behavior Provider ID to a list of return values of mutations involving that Provider
+    Map<String, List<Map<String, Map<String, Object>>>> ret =
+            new HashMap<String, List<Map<String, Map<String, Object>>>>();
 
     // Iterate through all behaviors
     for (Map<String, Object> edge : edgeList) {
@@ -198,6 +202,11 @@ public class Main {
 
             if (mutationData != null) {
               editedDataObjects.add(dataObjectId);
+              if (!ret.containsKey(behaviorProviderId)) {
+                ret.put(behaviorProviderId, new ArrayList<Map<String, Map<String, Object>>>());
+              }
+              ret.get(behaviorProviderId).add(mutationData);
+
               System.out.println("  >>> Relation between " + dataObjectDisplayName
                       + " and " + behaviorProviderDisplayName + " added.");
             }
@@ -208,6 +217,7 @@ public class Main {
         }
       }
     }
+    return ret;
   }
 
   public static void main(String[] args) throws Exception {

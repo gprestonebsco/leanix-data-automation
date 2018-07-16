@@ -1,6 +1,7 @@
 {
   factSheet(id: "d960c788-f127-4ed4-93ab-be7e84fa0ce8") {
     id
+    displayName
     type
     ... on Interface {
       relInterfaceToProviderApplication {
@@ -8,6 +9,7 @@
           node {
             factSheet {
               id
+              displayName
             }
           }
         }
@@ -17,6 +19,7 @@
           node {
             factSheet {
               id
+              displayName
               type
               ... on DataObject {
                 relDataObjectToApplication {
@@ -25,6 +28,7 @@
                       id
                       factSheet {
                         id
+                        displayName
                       }
                     }
                   }
@@ -39,6 +43,7 @@
           node {
             factSheet {
               id
+              displayName
               type
                ... on ITComponent {
                   relITComponentToApplication {
@@ -47,6 +52,7 @@
                         id
                         factSheet {
                           id
+                          displayName
                         }
                       }
                     }

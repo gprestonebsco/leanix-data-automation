@@ -1,4 +1,3 @@
-import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("LoopConditionNotUpdatedInsideLoop")
 class AutomationTests {
 
   private ApiClient apiClient;
@@ -43,13 +43,17 @@ class AutomationTests {
   @Test
   synchronized void testAutomation1() throws InterruptedException {
     // If relationships exist, remove them
-    this.resetType(true);
+    Boolean r = this.resetType(true);
+    while (r == null) {
+      this.wait();
+    }
+    TimeUnit.SECONDS.sleep(1);
 
     // Execute query/mutation
     Map<String, List<Map<String, Map<String, Object>>>> automation1Data = null;
     try {
       automation1Data = Main.automation1(this.apiClient);
-      this.notify();
+      this.notifyAll();
     }
     catch (ApiException e) {
       fail();
@@ -72,35 +76,40 @@ class AutomationTests {
   @Test
   synchronized void testAutomation2() throws InterruptedException {
     // If relationships exist, remove them
-    this.resetType(true);
+    Boolean r = this.resetType(false);
+    while (r == null) {
+      this.wait();
+    }
+    TimeUnit.SECONDS.sleep(1);
 
     // Execute query/mutation
-    Map<String, List<Map<String, Map<String, Object>>>> automation1Data = null;
+    Map<String, List<Map<String, Map<String, Object>>>> automation2Data = null;
     try {
-      automation1Data = Main.automation1(this.apiClient);
-      this.notify();
+      automation2Data = Main.automation2(this.apiClient);
+      this.notifyAll();
     }
     catch (ApiException e) {
       fail();
     }
 
-    while (automation1Data == null) {
+    while (automation2Data == null) {
       this.wait();
     }
 
     // TODO: Sometimes fails here. Indicates that resetting isn't always removing relation properly.
-    if (automation1Data.size() == 0) {
+    if (automation2Data.size() == 0) {
       fail();
     }
 
     // Check if desired relationships exist
-    String providerId = automation1Data.keySet().iterator().next();
-    this.checkType(true, providerId, automation1Data.get(providerId).get(0));
+    String providerId = automation2Data.keySet().iterator().next();
+    this.checkType(false, providerId, automation2Data.get(providerId).get(0));
   }
 
   // Remove existing ITComponent -> Behavior Provider or DataObject -> Behavior Provider relations.
-  // resetType(true) indicates ITComponent, resetType(false) indicates DataObject
-  private void resetType(boolean itComponent) {
+  // resetType(true) indicates ITComponent, resetType(false) indicates DataObject.
+  // Returns a boolean to indicate the end of the method execution.
+  private synchronized Boolean resetType(boolean itComponent) {
     // TODO: Create abstraction that allows for faster traversal of the query result
     String type;
     if (itComponent) {
@@ -109,6 +118,7 @@ class AutomationTests {
     else {
       type = "DataObject";
     }
+    System.out.println("Reset " + type + "\n");
 
     Query check = new Query(apiClient, "checkrelations.graphql", new HashMap<String, String>());
     Map<String, Map<String, Object>> checkData = new HashMap<String, Map<String, Object>>();
@@ -141,6 +151,7 @@ class AutomationTests {
         Map<String, Object> typeFactSheet = (Map<String, Object>) typeNode.get("factSheet");
 
         String typeId = (String) typeFactSheet.get("id");
+        String typeName = (String) typeFactSheet.get("displayName");
         String typeType = (String) typeFactSheet.get("type");
 
         Map<String, Object> relTypeToApplication = (Map<String, Object>)
@@ -153,6 +164,7 @@ class AutomationTests {
 
           String relationId = (String) applicationNode.get("id");
           String applicationId = (String) applicationFactSheet.get("id");
+          String applicationName = (String) applicationFactSheet.get("displayName");
 
           // If this Application is the Behavior Provider, remove it
           if (applicationId.equals(behaviorProviderId)) {
@@ -182,6 +194,7 @@ class AutomationTests {
             Query removeQuery = new Query(apiClient, "remove.graphql", removeIds);
             try {
               removeQuery.execute();
+              System.out.println(">>> Relation between " + typeName + " and " + applicationName + " removed.");
             }
             catch (ApiException e) {
               fail();
@@ -190,6 +203,8 @@ class AutomationTests {
         }
       }
     }
+    this.notifyAll();
+    return true;
   }
 
   private void checkType(boolean itComponent, String providerId, Map<String, Map<String, Object>> data) {
