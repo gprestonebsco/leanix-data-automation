@@ -43,11 +43,7 @@ class AutomationTests {
   @Test
   synchronized void testAutomation1() throws InterruptedException {
     // If relationships exist, remove them
-    Boolean r = this.resetType(true);
-    while (r == null) {
-      this.wait();
-    }
-    TimeUnit.SECONDS.sleep(1);
+    this.resetType(true);
 
     // Execute query/mutation
     Map<String, List<Map<String, Map<String, Object>>>> automation1Data = null;
@@ -63,7 +59,6 @@ class AutomationTests {
       this.wait();
     }
 
-    // TODO: Sometimes fails here. Indicates that resetting isn't always removing relation properly.
     if (automation1Data.size() == 0) {
       fail();
     }
@@ -76,11 +71,7 @@ class AutomationTests {
   @Test
   synchronized void testAutomation2() throws InterruptedException {
     // If relationships exist, remove them
-    Boolean r = this.resetType(false);
-    while (r == null) {
-      this.wait();
-    }
-    TimeUnit.SECONDS.sleep(1);
+    this.resetType(false);
 
     // Execute query/mutation
     Map<String, List<Map<String, Map<String, Object>>>> automation2Data = null;
@@ -96,7 +87,6 @@ class AutomationTests {
       this.wait();
     }
 
-    // TODO: Sometimes fails here. Indicates that resetting isn't always removing relation properly.
     if (automation2Data.size() == 0) {
       fail();
     }
@@ -109,7 +99,7 @@ class AutomationTests {
   // Remove existing ITComponent -> Behavior Provider or DataObject -> Behavior Provider relations.
   // resetType(true) indicates ITComponent, resetType(false) indicates DataObject.
   // Returns a boolean to indicate the end of the method execution.
-  private synchronized Boolean resetType(boolean itComponent) {
+  private synchronized void resetType(boolean itComponent) {
     // TODO: Create abstraction that allows for faster traversal of the query result
     String type;
     if (itComponent) {
@@ -203,8 +193,13 @@ class AutomationTests {
         }
       }
     }
-    this.notifyAll();
-    return true;
+    // Wait 0.5s to make sure API call finishes
+    try {
+      TimeUnit.MILLISECONDS.sleep(500);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
   }
 
   private void checkType(boolean itComponent, String providerId, Map<String, Map<String, Object>> data) {
@@ -235,72 +230,6 @@ class AutomationTests {
 
     if (!containsProviderId) {
       fail();
-    }
-  }
-
-  // Check if desired relations exist for either ITComponents or DataObjects.
-  // checkType(true) indicates ITComponent, checkType(false) indicates DataObject
-  private void checkType(boolean itComponent) {
-    String type;
-    if (itComponent) {
-      type = "ITComponent";
-    }
-    else {
-      type = "DataObject";
-    }
-
-    Query check = new Query(apiClient, "checkrelations.graphql", new HashMap<String, String>());
-    Map<String, Map<String, Object>> checkData = new HashMap<String, Map<String, Object>>();
-    try {
-      checkData = check.execute();
-    }
-    catch (ApiException e) {
-      fail();
-    }
-    // Get Behavior Provider ID
-    Map<String, Object> relInterfaceToProviderApplication = (Map<String, Object>)
-            checkData.get("factSheet").get("relInterfaceToProviderApplication");
-    List<Map<String, Object>> providers = (List<Map<String, Object>>)
-            relInterfaceToProviderApplication.get("edges");
-
-    if (providers.size() > 0) {
-      Map<String, Object> behaviorProviderNode = (Map<String, Object>) providers.get(0).get("node");
-      Map<String, Object> behaviorProviderFactSheet = (Map<String, Object>) behaviorProviderNode.get("factSheet");
-
-      String behaviorProviderId = (String) behaviorProviderFactSheet.get("id");
-
-      // Look for Behavior Provider ID in Type -> Application relations
-      Map<String, Object> relInterfaceToType = (Map<String, Object>)
-              checkData.get("factSheet").get("relInterfaceTo" + type);
-      List<Map<String, Object>> typeEdges = (List<Map<String, Object>>)
-              relInterfaceToType.get("edges");
-
-      for (Map<String, Object> typeEdge : typeEdges) {
-        Map<String, Object> typeNode = (Map<String, Object>) typeEdge.get("node");
-        Map<String, Object> typeFactSheet = (Map<String, Object>) typeNode.get("factSheet");
-
-        Map<String, Object> relTypeToApplication = (Map<String, Object>)
-                typeFactSheet.get("rel" + type + "ToApplication");
-        List<Map<String, Object>> applications = (List<Map<String, Object>>) relTypeToApplication.get("edges");
-
-        // Check if this fact sheet has a relation to the Behavior Provider
-        boolean containsBehaviorProviderId = false;
-        for (Map<String, Object> applicationEdge : applications) {
-          Map<String, Object> applicationNode = (Map<String, Object>) applicationEdge.get("node");
-          Map<String, Object> applicationFactSheet = (Map<String, Object>) applicationNode.get("factSheet");
-          String applicationId = (String) applicationFactSheet.get("id");
-
-          if (applicationId.equals(behaviorProviderId)) {
-            containsBehaviorProviderId = true;
-            break;
-          }
-        }
-
-        // If desired relation doesn't exist, fail
-        if (!containsBehaviorProviderId) {
-          fail();
-        }
-      }
     }
   }
 }

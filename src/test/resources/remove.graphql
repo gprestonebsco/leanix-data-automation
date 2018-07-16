@@ -20,6 +20,18 @@ mutation {
           }
         }
       }
+      ... on DataObject {
+        relDataObjectToApplication {
+          edges {
+            node {
+              id
+              factSheet {
+                id
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
