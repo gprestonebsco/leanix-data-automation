@@ -108,7 +108,6 @@ class AutomationTests {
   // resetType(true) indicates ITComponent, resetType(false) indicates DataObject.
   // Returns a boolean to indicate the end of the method execution.
   private void resetType(boolean itComponent) {
-    // TODO: Create abstraction that allows for faster traversal of the query result
     String type;
     if (itComponent) {
       type = "ITComponent";
