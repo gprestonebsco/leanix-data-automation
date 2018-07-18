@@ -7,6 +7,9 @@ import java.util.Map;
 
 public class Main {
 
+  // TODO: Create method that removes all relations created in the current run
+  // TODO: Print metrics of number of checked Behaviors and number of created relations at the end
+
   // Return a Map of Provider ID (String) -> List<mutation query data> (Map<String, Map<String, Object>>) for checking
   static Map<String, List<Map<String, Map<String, Object>>>> automation1(ApiClient apiClient) throws ApiException {
     Query mainQuery = new Query(apiClient, "main1.graphql", new HashMap<String, String>());
@@ -220,6 +223,53 @@ public class Main {
     return ret;
   }
 
+  // Compute list of newly related fact sheets. Each element is a List of length 3 to store the
+  // IDs of the Behavior Provider, ITComponent/DataObject, and relation in that order.
+  private static List<List<String>> newRelationInfo(Map<String, List<Map<String, Map<String, Object>>>> data) {
+    List<List<String>> relations = new ArrayList<List<String>>();
+
+    // Iterate over different provider IDs
+    for (String providerId : data.keySet()) {
+      // Iterate over mutation data for a given provider ID
+      for (Map<String, Map<String, Object>> datum : data.get(providerId)) {
+        List<String> ids = new ArrayList<String>();
+        ids.add(providerId); // Behavior Provider ID
+
+        Map<String, Object> factSheet = (Map<String, Object>) datum.get("updateFactSheet").get("factSheet");
+
+        String type = (String) factSheet.get("type");
+        String typeId = (String) factSheet.get("id");
+        ids.add(typeId); // ITComponent/DataObject ID
+
+        Map<String, Object> relTypeToApplication = (Map<String, Object>) factSheet.get("rel" + type + "ToApplication");
+        List<Map<String, Object>> edges = (List<Map<String, Object>>) relTypeToApplication.get("edges");
+
+        // Find the newly created relation and document the relation ID
+        String relationId;
+        for (Map<String, Object> e : edges) {
+          Map<String, Object> applicationNode = (Map<String, Object>) e.get("node");
+          Map<String, Object> applicationFactSheet = (Map<String, Object>) applicationNode.get("factSheet");
+          String applicationId = (String) applicationFactSheet.get("id");
+
+          if (applicationId.equals(providerId)) {
+            relationId = (String) applicationNode.get("id");
+            ids.add(relationId); // Relation ID
+            break;
+          }
+        }
+        relations.add(ids);
+      }
+    }
+    return relations;
+  }
+
+  // Generate metrics from automation return value
+  // TODO: Figure out a way to not pass type
+  private static String genMetrics(Map<String, List<Map<String, Map<String, Object>>>> ret, String type) {
+    List<List<String>> relations = newRelationInfo(ret);
+    return "Newly created " + type + " relations: " + relations.size();
+  }
+
   public static void main(String[] args) throws Exception {
     ApiClient apiClient = new ApiClientBuilder()
             .withBasePath("https://us.leanix.net/services/pathfinder/v1")
@@ -240,11 +290,18 @@ public class Main {
     System.out.println("\n==================================================================");
     System.out.println("AUTOMATION 1");
 
-    automation1(apiClient);
+    Map<String, List<Map<String, Map<String, Object>>>> automation1Data = automation1(apiClient);
 
     System.out.println("\n==================================================================");
     System.out.println("AUTOMATION 2");
 
-    automation2(apiClient);
+    Map<String, List<Map<String, Map<String, Object>>>> automation2Data = automation2(apiClient);
+
+    System.out.println("\n==================================================================");
+    System.out.println("METRICS");
+    System.out.println("------------------------------------------------------------------\n");
+
+    System.out.println(genMetrics(automation1Data, "ITComponent"));
+    System.out.println(genMetrics(automation2Data, "DataObject"));
   }
 }

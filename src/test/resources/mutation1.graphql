@@ -3,11 +3,13 @@ mutation {
     rev: %rev, patches: [{op: add, path: "/relITComponentToApplication/new_1", value: "{\"factSheetId\":\"%providerid\"}"}]) {
     factSheet {
       id
+      type
       displayName
       ... on ITComponent {
         relITComponentToApplication {
           edges {
             node {
+              id
               factSheet{
                 id
                 type

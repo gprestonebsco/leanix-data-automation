@@ -106,7 +106,6 @@ class AutomationTests {
 
   // Remove existing ITComponent -> Behavior Provider or DataObject -> Behavior Provider relations.
   // resetType(true) indicates ITComponent, resetType(false) indicates DataObject.
-  // Returns a boolean to indicate the end of the method execution.
   private void resetType(boolean itComponent) {
     String type;
     if (itComponent) {

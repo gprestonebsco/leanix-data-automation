@@ -3,11 +3,13 @@ mutation {
     rev: %rev, patches: [{op: add, path: "/relDataObjectToApplication/new_1", value: "{\"factSheetId\":\"%providerid\"}"}]) {
     factSheet {
       id
+      type
       displayName
       ... on DataObject {
         relDataObjectToApplication {
           edges {
             node {
+              id
               factSheet{
                 id
                 type
