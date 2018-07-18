@@ -25,14 +25,10 @@ class FileUtils {
       reader.close();
     }
     catch(FileNotFoundException ex) {
-      System.out.println(
-              "Unable to open file '" +
-                      fileName + "'");
+      System.out.println("Unable to open file '" + fileName + "'");
     }
     catch(IOException ex) {
-      System.out.println(
-              "Error reading file '"
-                      + fileName + "'");
+      System.out.println("Error reading file '" + fileName + "'");
     }
 
     return contents.toString();
@@ -53,14 +49,10 @@ class FileUtils {
       reader.close();
     }
     catch(FileNotFoundException ex) {
-      System.out.println(
-              "Unable to open file '" +
-                      fileName + "'");
+      System.out.println("Unable to open file '" + fileName + "'");
     }
     catch(IOException ex) {
-      System.out.println(
-              "Error reading file '"
-                      + fileName + "'");
+      System.out.println("Error reading file '" + fileName + "'");
     }
 
     return contents;

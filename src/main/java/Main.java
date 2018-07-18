@@ -1,11 +1,12 @@
 import net.leanix.api.common.*;
 
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
+
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -276,6 +277,16 @@ public class Main {
     return "Newly created " + type + " relations: " + relations.size();
   }
 
+  private void output(String out) throws Exception {
+    URL resourceUrl = getClass().getResource("newrelations.txt");
+    File file = new File(resourceUrl.toURI());
+    FileWriter fileWriter = new FileWriter(file);
+    BufferedWriter outStream = new BufferedWriter(fileWriter);
+    outStream.write(out);
+    outStream.close();
+    System.out.println("Relevant IDs written to newrelations.txt.");
+  }
+
   // TODO: Handle ApiException correctly while keeping track of already mutated fact sheets
   public static void main(String[] args) throws ApiException {
     ApiClient apiClient = new ApiClientBuilder()
@@ -310,6 +321,7 @@ public class Main {
 
     System.out.println(genMetrics(automation1Data, "ITComponent"));
     System.out.println(genMetrics(automation2Data, "DataObject"));
+    System.out.println("------------------------------------------------------------------\n");
 
     List<List<String>> relations = new ArrayList<List<String>>(newRelationInfo(automation1Data));
     relations.addAll(newRelationInfo(automation2Data));
@@ -320,9 +332,14 @@ public class Main {
     }
 
     // Output changed IDs of affected fact sheets to newrelations.txt
-    Path file = Paths.get("src/main/resources/newrelations.txt");
+    Path mainFile = Paths.get("src/main/resources/newrelations.txt");
+    Path testFile = Paths.get("src/test/resources/newrelations.txt");
     try {
-      Files.write(file, relationsStr, Charset.forName("UTF-8"));
+      Files.write(mainFile, relationsStr, Charset.forName("UTF-8"));
+      System.out.println("Relevant IDs written to:");
+      System.out.println("* src/main/resources/newrelations.txt.");
+      Files.write(testFile, relationsStr, Charset.forName("UTF-8"));
+      System.out.println("* src/test/resources/newrelations.txt.");
     }
     catch (IOException e) {
       e.printStackTrace();
