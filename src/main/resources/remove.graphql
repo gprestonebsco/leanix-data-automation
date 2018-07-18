@@ -1,0 +1,37 @@
+mutation {
+  updateFactSheet(id: "%id",
+    rev: %rev,
+    patches: [{
+      op: remove,
+      path: "/rel%typeToApplication/%relid",
+    	value: "{\"factSheetId\": \"%appid\"}"
+    }]) {
+    factSheet {
+      id
+      ... on ITComponent {
+        relITComponentToApplication {
+          edges {
+            node {
+              id
+              factSheet {
+                id
+              }
+            }
+          }
+        }
+      }
+      ... on DataObject {
+        relDataObjectToApplication {
+          edges {
+            node {
+              id
+              factSheet {
+                id
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
