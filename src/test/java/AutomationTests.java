@@ -50,9 +50,10 @@ class AutomationTests {
     this.resetType(true);
 
     // Execute query/mutation
+    Automation a1 = new Automation(this.apiClient);
     Map<String, List<Map<String, Map<String, Object>>>> automation1Data = null;
     try {
-      automation1Data = Main.automation1(this.apiClient);
+      automation1Data = a1.automation1();
       this.notifyAll();
     }
     catch (ApiException e) {
@@ -82,9 +83,10 @@ class AutomationTests {
     this.resetType(false);
 
     // Execute query/mutation
+    Automation a2 = new Automation(this.apiClient);
     Map<String, List<Map<String, Map<String, Object>>>> automation2Data = null;
     try {
-      automation2Data = Main.automation2(this.apiClient);
+      automation2Data = a2.automation2();
       this.notifyAll();
     }
     catch (ApiException e) {
