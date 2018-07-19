@@ -94,13 +94,7 @@ public class Automation {
           // If IT Component is not related to the Behavior Provider, create the relation
           if (editNeeded) {
             // Get the revision number
-            Map<String, String> revIds = new HashMap<String, String>();
-            revIds.put("id", itComponentId);
-
-            Query revQuery = new Query(this.apiClient, "rev.graphql", revIds);
-            Map<String, Map<String, Object>> revData = revQuery.execute();
-
-            String rev = revData.get("factSheet").get("rev").toString();
+            String rev = QueryUtils.getRev(this.apiClient, itComponentId);
 
             // Make the mutation
             Map<String, String> mutationIds = new HashMap<String, String>();
@@ -203,13 +197,7 @@ public class Automation {
           // If Data Object is not related to the Behavior Provider, create the relation
           if (editNeeded) {
             // Get the revision number
-            Map<String, String> revIds = new HashMap<String, String>();
-            revIds.put("id", dataObjectId);
-
-            Query revQuery = new Query(this.apiClient, "rev.graphql", revIds);
-            Map<String, Map<String, Object>> revData = revQuery.execute();
-
-            String rev = revData.get("factSheet").get("rev").toString();
+            String rev = QueryUtils.getRev(this.apiClient, dataObjectId);
 
             // Make the mutation
             Map<String, String> mutationIds = new HashMap<String, String>();

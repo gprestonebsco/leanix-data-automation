@@ -1,6 +1,5 @@
 import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import net.leanix.api.common.ApiClient;
@@ -17,10 +16,8 @@ class AutomationTests {
 
   private ApiClient apiClient;
 
-  @BeforeEach
-  void init() {
+  AutomationTests() {
     String token = new FileUtils("apitoken.txt").read();
-
     this.apiClient = new ApiClientBuilder()
             .withBasePath("https://us.leanix.net/services/pathfinder/v1")
             .withApiToken(token)
@@ -168,19 +165,13 @@ class AutomationTests {
           // If this Application is the Behavior Provider, remove it
           if (applicationId.equals(behaviorProviderId)) {
             // Get the revision number
-            Map<String, String> revIds = new HashMap<String, String>();
-            revIds.put("id", typeId);
-
-            Query revQuery = new Query(this.apiClient, "rev.graphql", revIds);
-            Map<String, Map<String, Object>> revData = new HashMap<String, Map<String, Object>>();
+            String rev = "";
             try {
-              revData = revQuery.execute();
+              rev = QueryUtils.getRev(this.apiClient, typeId);
             }
             catch (ApiException e) {
               fail();
             }
-
-            String rev = revData.get("factSheet").get("rev").toString();
 
             // Remove the relation
             Map<String, String> removeIds = new HashMap<String, String>();
