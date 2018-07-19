@@ -50,8 +50,7 @@ public class Main {
     System.out.println("METRICS");
     System.out.println("------------------------------------------------------------------\n");
 
-    System.out.println(genMetrics(automation1Data, "ITComponent"));
-    System.out.println(genMetrics(automation2Data, "DataObject"));
+    printMetrics(a1, a2, automation1Data, automation2Data);
     System.out.println("------------------------------------------------------------------\n");
 
     List<List<String>> relations = new ArrayList<List<String>>(newRelationInfo(automation1Data));
@@ -67,10 +66,10 @@ public class Main {
     Path testFile = Paths.get("src/test/resources/newrelations.txt");
     try {
       Files.write(mainFile, relationsStr, Charset.forName("UTF-8"));
-      System.out.println("Relevant IDs written to:");
-      System.out.println("* src/main/resources/newrelations.txt.");
+      System.out.println("Relevant IDs written to");
+      System.out.println("* src/main/resources/newrelations.txt");
       Files.write(testFile, relationsStr, Charset.forName("UTF-8"));
-      System.out.println("* src/test/resources/newrelations.txt.");
+      System.out.println("* src/test/resources/newrelations.txt");
     }
     catch (IOException e) {
       e.printStackTrace();
@@ -117,10 +116,19 @@ public class Main {
     return relations;
   }
 
-  // Generate metrics from automation return value
-  // TODO: Figure out a way to not pass type
-  private static String genMetrics(Map<String, List<Map<String, Map<String, Object>>>> ret, String type) {
-    List<List<String>> relations = newRelationInfo(ret);
-    return "Newly created " + type + " relations: " + relations.size();
+  // Print metrics from automation return values
+  private static void printMetrics(Automation a1, Automation a2,
+                                   Map<String,List<Map<String, Map<String, Object>>>> ret1,
+                                   Map<String, List<Map<String, Map<String, Object>>>> ret2) {
+    List<List<String>> relations1 = newRelationInfo(ret1);
+    List<List<String>> relations2 = newRelationInfo(ret2);
+
+    System.out.println("ITComponent");
+    System.out.println("* Behaviors checked: " + a1.getNumCheckedBehaviors());
+    System.out.println("* Newly created relations: " + relations1.size() + "\n");
+
+    System.out.println("DataObject");
+    System.out.println("* Behaviors checked: " + a2.getNumCheckedBehaviors());
+    System.out.println("* Newly created DataObject relations: " + relations2.size());
   }
 }

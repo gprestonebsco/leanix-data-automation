@@ -9,9 +9,16 @@ import java.util.Map;
 public class Automation {
 
   private ApiClient apiClient;
+  private int checkedBehaviors;
 
   Automation(ApiClient apiClient) {
     this.apiClient = apiClient;
+    this.checkedBehaviors = 0;
+  }
+
+  // Return the number of checked Behaviors on the most recent run
+  int getNumCheckedBehaviors() {
+    return this.checkedBehaviors;
   }
 
   // Return a Map of Provider ID (String) -> List<mutation query data> (Map<String, Map<String, Object>>) for checking
@@ -29,7 +36,10 @@ public class Automation {
             new HashMap<String, List<Map<String, Map<String, Object>>>>();
 
     // Iterate through all behaviors
+    this.checkedBehaviors = 0;
     for (Map<String, Object> edge : edgeList) {
+      this.checkedBehaviors += 1;
+
       System.out.println("------------------------------------------------------------------\n");
 
       Map<String, Object> node = (Map<String, Object>) edge.get("node");
@@ -135,7 +145,10 @@ public class Automation {
             new HashMap<String, List<Map<String, Map<String, Object>>>>();
 
     // Iterate through all behaviors
+    this.checkedBehaviors = 0;
     for (Map<String, Object> edge : edgeList) {
+      this.checkedBehaviors += 1;
+
       System.out.println("------------------------------------------------------------------\n");
 
       Map<String, Object> node = (Map<String, Object>) edge.get("node");
