@@ -28,7 +28,7 @@ class AutomationTests {
   @Test
   void testApi() {
     // Test API access
-    Query test = new Query(apiClient, "test.graphql", new HashMap<String, String>());
+    Query test = new Query(this.apiClient, "test.graphql", new HashMap<String, String>());
     try {
       test.execute();
     }
