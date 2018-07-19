@@ -4,10 +4,10 @@ import net.leanix.api.common.ApiException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class QueryUtils {
+class QueryUtils {
 
   // Get the revision number of a fact sheet with its ID
-  public static String getRev(ApiClient apiClient, String id) throws ApiException {
+  static String getRev(ApiClient apiClient, String id) throws ApiException {
     Map<String, String> revIds = new HashMap<String, String>();
     revIds.put("id", id);
 
