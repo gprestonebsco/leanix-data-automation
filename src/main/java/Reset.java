@@ -2,13 +2,23 @@ import net.leanix.api.common.ApiClient;
 import net.leanix.api.common.ApiClientBuilder;
 import net.leanix.api.common.ApiException;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class Reset {
 
-  public static void main(String[] args) {
-    FileUtils relationsFile = new FileUtils("newrelations.txt");
-    List<String> relationsStr = relationsFile.readlines();
+  // TODO: Figure out a better way to handle exception
+  public static void main(String[] args) throws FileNotFoundException {
+    FileUtils relationsFile1 = new FileUtils("ids/a1.txt", false);
+    FileUtils relationsFile2 = new FileUtils("ids/a2.txt", false);
+
+    List<String> relationsStr = new ArrayList<String>(relationsFile1.readlines());
+    relationsStr.addAll(relationsFile2.readlines());
 
     List<List<String>> relations = new ArrayList<List<String>>();
     for (String s : relationsStr) {
@@ -25,13 +35,16 @@ public class Reset {
     Query test = new Query(apiClient, "test.graphql", new HashMap<String, String>());
     try {
       test.execute();
+
+      reset(apiClient, relations);
+      // If reset was successful, erase the files to stay up to date
+      // TODO: Come up with a better way of storing change history so it can be kept even after a reset
+      erase("a1.txt");
+      erase("a2.txt");
     }
     catch (ApiException e) {
       System.out.println("Invalid API token.");
-      System.exit(1);
     }
-
-    reset(apiClient, relations);
   }
 
   // Remove newly created relations
@@ -60,7 +73,6 @@ public class Reset {
       removeIds.put("type", type);
       removeIds.put("rev", rev);
       removeIds.put("relid", ids.get(2));
-      removeIds.put("appid", ids.get(0));
 
       Query removeQuery = new Query(apiClient, "remove.graphql", removeIds);
       try {
@@ -70,6 +82,19 @@ public class Reset {
       catch (ApiException e) {
         System.out.println("Relation between " + ids.get(0) + " and " + ids.get(1) + " not found.");
       }
+    }
+  }
+
+  // Output changed IDs of affected fact sheets
+  private static void erase(String fname) {
+    Path mainFile = Paths.get("ids/" + fname);
+    Path testFile = Paths.get("ids/" + fname);
+    try {
+      Files.write(mainFile, new ArrayList<String>(), Charset.forName("UTF-8"));
+      Files.write(testFile, new ArrayList<String>(), Charset.forName("UTF-8"));
+    }
+    catch (IOException e) {
+      e.printStackTrace();
     }
   }
 }

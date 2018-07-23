@@ -28,6 +28,7 @@ class Query {
     GraphQLResult result = graphqlApi.processGraphQL(request);
 
     if (result.getErrors() != null) {
+      System.out.println(result.getErrors());
       throw new ApiException();
     }
 

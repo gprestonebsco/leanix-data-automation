@@ -26,8 +26,8 @@ class AutomationTests {
   }
 
   @Test
+  // Test API access
   void testApi() {
-    // Test API access
     Query test = new Query(this.apiClient, "test.graphql", new HashMap<String, String>());
     try {
       test.execute();
@@ -48,19 +48,15 @@ class AutomationTests {
 
     // Execute query/mutation
     Automation a1 = new Automation(this.apiClient);
-    Map<String, List<Map<String, Map<String, Object>>>> automation1Data = null;
-    try {
-      automation1Data = a1.automation1();
-      this.notifyAll();
-    }
-    catch (ApiException e) {
-      fail();
-    }
+    Map<String, List<Map<String, Map<String, Object>>>> automation1Data = a1.automation1();
 
+    // Make sure automation has completed before continuing
     while (automation1Data == null) {
       this.wait();
     }
+    this.notifyAll();
 
+    // If nothing was changed, something went wrong
     if (automation1Data.size() == 0) {
       fail();
     }
@@ -81,19 +77,15 @@ class AutomationTests {
 
     // Execute query/mutation
     Automation a2 = new Automation(this.apiClient);
-    Map<String, List<Map<String, Map<String, Object>>>> automation2Data = null;
-    try {
-      automation2Data = a2.automation2();
-      this.notifyAll();
-    }
-    catch (ApiException e) {
-      fail();
-    }
+    Map<String, List<Map<String, Map<String, Object>>>> automation2Data = a2.automation2();
 
+    // Make sure automation has completed before continuing
     while (automation2Data == null) {
       this.wait();
     }
+    this.notifyAll();
 
+    // If nothing was changed, something went wrong
     if (automation2Data.size() == 0) {
       fail();
     }

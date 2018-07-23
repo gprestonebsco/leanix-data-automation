@@ -3,25 +3,12 @@ mutation {
     rev: %rev,
     patches: [{
       op: remove,
-      path: "/rel%typeToApplication/%relid",
-    	value: "{\"factSheetId\": \"%appid\"}"
+      path: "/rel%typeToApplication/%relid"
     }]) {
     factSheet {
       id
-      ... on ITComponent {
-        relITComponentToApplication {
-          edges {
-            node {
-              id
-              factSheet {
-                id
-              }
-            }
-          }
-        }
-      }
-      ... on DataObject {
-        relDataObjectToApplication {
+      ... on %type {
+        rel%typeToApplication {
           edges {
             node {
               id

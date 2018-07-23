@@ -3,6 +3,7 @@ import net.leanix.api.common.ApiClientBuilder;
 import net.leanix.api.common.ApiException;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
+@SuppressWarnings("LoopConditionNotUpdatedInsideLoop")
 class ResetTests {
   // 1. Remove desired relations if they exist
   // 2. Run automation1 to re-add some and set newrelations.txt
@@ -77,13 +79,94 @@ class ResetTests {
   }
 
   @Test
-  void testApi() {
-    // Test API access
-    Query test = new Query(this.apiClient, "test.graphql", new HashMap<String, String>());
+  // Test if Reset correctly removes relations created by automation 1
+  synchronized void testResetAutomation1() throws InterruptedException {
+    // Re-add automation 1 relations so they can be reset
+    Automation a1 = new Automation(this.apiClient);
+    Map<String, List<Map<String, Map<String, Object>>>> automation1Data = a1.automation1();
+
+    // Make sure automation has completed before continuing
+    while (automation1Data == null) {
+      this.wait();
+    }
+    this.notifyAll();
+
+    // If nothing was changed, something went wrong
+    if (automation1Data.size() == 0) {
+      fail();
+    }
+
+    String[] args = {new FileUtils("apitoken.txt").read()};
     try {
-      test.execute();
+      Reset.main(args);
+    }
+    catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+
+    // Check if ITComponents are gone
+    Query checkResetQuery = new Query(this.apiClient, "checkreset.graphql", new HashMap<String, String>());
+    try {
+      Map<String, Map<String, Object>> checkResetData = checkResetQuery.execute();
+      this.checkType(true, checkResetData);
     }
     catch (ApiException e) {
+      fail();
+    }
+  }
+
+  @Test
+  // Test if Reset correctly removes relations created by automation 2
+  synchronized void testResetAutomation2() throws InterruptedException {
+    // Re-add automation 2 relations so they can be reset
+    Automation a2 = new Automation(this.apiClient);
+    Map<String, List<Map<String, Map<String, Object>>>> automation2Data = a2.automation2();
+
+    // Make sure automation has completed before continuing
+    while (automation2Data == null) {
+      this.wait();
+    }
+    this.notifyAll();
+
+    // If nothing was changed, something went wrong
+    if (automation2Data.size() == 0) {
+      fail();
+    }
+
+    String[] args = {new FileUtils("apitoken.txt").read()};
+    try {
+      Reset.main(args);
+    }
+    catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+
+    // Check if DataObjects are gone
+    Query checkResetQuery = new Query(this.apiClient, "checkreset.graphql", new HashMap<String, String>());
+    try {
+      Map<String, Map<String, Object>> checkResetData = checkResetQuery.execute();
+      this.checkType(false, checkResetData);
+    }
+    catch (ApiException e) {
+      fail();
+    }
+  }
+
+  private void checkType(boolean itComponent, Map<String, Map<String, Object>> data) {
+    String type;
+    if (itComponent) {
+      type = "ITComponent";
+    }
+    else {
+      type = "DataObject";
+    }
+
+    Map<String, Object> relToType = (Map<String, Object>)
+            data.get("factSheet") .get("relApplicationTo" + type);
+    List<Map<String, Object>> edges = (List<Map<String, Object>>) relToType.get("edges");
+
+    // edges should be empty if Reset worked correctly
+    if (edges.size() > 0) {
       fail();
     }
   }
