@@ -55,32 +55,33 @@ public class Reset {
       revIds.put("id", ids.get(1));
 
       Query revQuery = new Query(apiClient, "rev.graphql", revIds);
-      Map<String, Map<String, Object>> revData = null;
       try {
-        revData = revQuery.execute();
+        Map<String, Map<String, Object>> revData = revQuery.execute();
+
+        // All this needs to be in the try as well because the program will not be able to continue
+        // to this code if revQuery.execute() throws an ApiException. The only workaround is
+        // System.exit(1) in the catch block, which is bad practice.
+        String rev = revData.get("factSheet").get("rev").toString();
+        String type = revData.get("factSheet").get("type").toString();
+
+        // Remove the relation
+        Map<String, String> removeIds = new HashMap<String, String>();
+        removeIds.put("id", ids.get(1));
+        removeIds.put("type", type);
+        removeIds.put("rev", rev);
+        removeIds.put("relid", ids.get(2));
+
+        Query removeQuery = new Query(apiClient, "remove.graphql", removeIds);
+        try {
+          removeQuery.execute();
+          System.out.println(">>> Relation between " + ids.get(0) + " and " + ids.get(1) + " removed.");
+        }
+        catch (ApiException e) {
+          System.out.println("Relation between " + ids.get(0) + " and " + ids.get(1) + " not found.");
+        }
       }
       catch (ApiException e) {
         e.printStackTrace();
-        System.exit(1);
-      }
-
-      String rev = revData.get("factSheet").get("rev").toString();
-      String type = revData.get("factSheet").get("type").toString();
-
-      // Remove the relation
-      Map<String, String> removeIds = new HashMap<String, String>();
-      removeIds.put("id", ids.get(1));
-      removeIds.put("type", type);
-      removeIds.put("rev", rev);
-      removeIds.put("relid", ids.get(2));
-
-      Query removeQuery = new Query(apiClient, "remove.graphql", removeIds);
-      try {
-        removeQuery.execute();
-        System.out.println(">>> Relation between " + ids.get(0) + " and " + ids.get(1) + " removed.");
-      }
-      catch (ApiException e) {
-        System.out.println("Relation between " + ids.get(0) + " and " + ids.get(1) + " not found.");
       }
     }
   }
