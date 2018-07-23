@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 @SuppressWarnings("LoopConditionNotUpdatedInsideLoop")
 class ResetTests {
   // 1. Remove desired relations if they exist
-  // 2. Run automation1 to re-add some and set newrelations.txt
+  // 2. Run automation1 to re-add some and set ids/
   // 3. Run Reset and check if the correct relations are removed
-  // 4. Run automation2 to re-add the rest and set newrelations.txt
+  // 4. Run automation2 to re-add the rest and set ids/
   // 5. Run Reset and check if the correct relations are removed
 
   private ApiClient apiClient;

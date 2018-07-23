@@ -1,0 +1,24 @@
+mutation {
+  updateFactSheet(id: "%id",
+    rev: %rev,
+    patches: [{
+      op: remove,
+      path: "/rel%typeToApplication/%relid"
+    }]) {
+    factSheet {
+      id
+      ... on %type {
+        rel%typeToApplication {
+          edges {
+            node {
+              id
+              factSheet {
+                id
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

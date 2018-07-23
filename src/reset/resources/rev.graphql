@@ -1,0 +1,6 @@
+{
+  factSheet(id: "%id") {
+    rev
+    type
+  }
+}
