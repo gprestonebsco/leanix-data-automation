@@ -1,6 +1,7 @@
 import net.leanix.api.common.ApiClient;
 import net.leanix.api.common.ApiException;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -32,8 +33,17 @@ public class Automation {
       relationsStr.add(String.join(",", ids));
     }
 
-    Path mainFile = Paths.get("ids/" + fname);
-    Path testFile = Paths.get("ids/" + fname);
+    String dirName = "ids";
+    File dir = new File(dirName);
+    if (!dir.exists()) {
+      boolean created = dir.mkdir();
+      if (created) {
+        System.out.println("ids/ directory created.");
+      }
+    }
+
+    Path mainFile = Paths.get(dirName + "/" + fname);
+    Path testFile = Paths.get(dirName + "/" + fname);
     try {
       Files.write(mainFile, relationsStr, Charset.forName("UTF-8"));
       Files.write(testFile, relationsStr, Charset.forName("UTF-8"));

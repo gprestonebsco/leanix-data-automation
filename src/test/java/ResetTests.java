@@ -81,6 +81,7 @@ class ResetTests {
   @Test
   // Test if Reset correctly removes relations created by automation 1
   synchronized void testResetAutomation1() throws InterruptedException {
+    // TODO: Fails if ITComponent is still related but DataObject isn't
     // Re-add automation 1 relations so they can be reset
     Automation a1 = new Automation(this.apiClient);
     Map<String, List<Map<String, Map<String, Object>>>> automation1Data = a1.automation1();
