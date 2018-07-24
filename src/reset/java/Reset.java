@@ -54,14 +54,14 @@ public class Reset {
         // need to be created.
 
         // Get the revision number
-        String rev = QueryUtils.getRev(apiClient, ids.get(1));
+        int rev = QueryUtils.getRev(apiClient, ids.get(1));
         String type = QueryUtils.getType(apiClient, ids.get(1));
 
         // Remove the relation
         Map<String, String> removeIds = new HashMap<String, String>();
         removeIds.put("id", ids.get(1));
         removeIds.put("type", type);
-        removeIds.put("rev", rev);
+        removeIds.put("rev", Integer.toString(rev));
         removeIds.put("relid", ids.get(2));
 
         Query removeQuery = new Query(apiClient, "remove.graphql", removeIds);

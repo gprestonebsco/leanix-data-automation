@@ -18,8 +18,8 @@ class QueryUtils {
   }
 
   // Get the revision number of a fact sheet with its ID
-  static String getRev(ApiClient apiClient, String id) throws ApiException {
-    return getRevFactSheet(apiClient, id).get("rev").toString();
+  static int getRev(ApiClient apiClient, String id) throws ApiException {
+    return Integer.parseInt(getRevFactSheet(apiClient, id).get("rev").toString());
   }
 
   // Get the type of a fact sheet with its ID

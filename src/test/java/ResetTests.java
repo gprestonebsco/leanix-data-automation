@@ -21,7 +21,7 @@ class ResetTests {
   private ApiClient apiClient;
 
   ResetTests() throws ApiException {
-    String token = new FileUtils("apitoken.txt").read();
+    String token = new FileUtils("apitoken.txt").read().trim();
     this.apiClient = new ApiClientBuilder()
             .withBasePath("https://us.leanix.net/services/pathfinder/v1")
             .withApiToken(token)
@@ -64,11 +64,11 @@ class ResetTests {
   // Remove the given relations from the given fact sheet (used specifically for provider reset)
   private void removeRelations(String providerId, List<String> relationIds) throws ApiException {
     for (String relId : relationIds) {
-      String rev = QueryUtils.getRev(this.apiClient, providerId);
+      int rev = QueryUtils.getRev(this.apiClient, providerId);
 
       Map<String, String> removeIds = new HashMap<String, String>();
       removeIds.put("id", providerId);
-      removeIds.put("rev", rev);
+      removeIds.put("rev", Integer.toString(rev));
       removeIds.put("type", "ITComponent");
       removeIds.put("relid", relId);
 

@@ -21,6 +21,11 @@ class Query {
     }
   }
 
+  // Get the GraphQL code this Query will be executing
+  String getQuery() {
+    return this.query;
+  }
+
   // Execute the query
   Map<String, Map<String, Object>> execute() throws ApiException {
     GraphqlApi graphqlApi = new GraphqlApi(this.apiClient);
