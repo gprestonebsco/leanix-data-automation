@@ -21,6 +21,7 @@ class Query {
     }
   }
 
+  // Execute the query
   Map<String, Map<String, Object>> execute() throws ApiException {
     GraphqlApi graphqlApi = new GraphqlApi(this.apiClient);
     GraphQLRequest request = new GraphQLRequest();
@@ -28,7 +29,7 @@ class Query {
     GraphQLResult result = graphqlApi.processGraphQL(request);
 
     if (result.getErrors() != null) {
-      System.out.println(result.getErrors());
+      System.out.println("ApiException: " + result.getErrors());
       throw new ApiException();
     }
 

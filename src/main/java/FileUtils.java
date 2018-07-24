@@ -30,6 +30,7 @@ class FileUtils {
     }
   }
 
+  // Get the file's contents as a single String
   String read() {
     String line;
     StringBuilder contents = new StringBuilder();
@@ -54,6 +55,7 @@ class FileUtils {
     return contents.toString();
   }
 
+  // Get the file's lines as a List of Strings
   List<String> readlines() {
     String line;
     List<String> contents = new ArrayList<String>();

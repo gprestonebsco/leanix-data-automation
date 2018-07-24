@@ -49,19 +49,13 @@ public class Reset {
   // Remove newly created relations
   private static void reset(ApiClient apiClient, List<List<String>> relations) {
     for (List<String> ids : relations) {
-      // Get the revision number
-      Map<String, String> revIds = new HashMap<String, String>();
-      revIds.put("id", ids.get(1));
-
-      Query revQuery = new Query(apiClient, "rev.graphql", revIds);
       try {
-        Map<String, Map<String, Object>> revData = revQuery.execute();
+        // This whole block of code is put in the try-catch so that multiple redundant try-catches don't
+        // need to be created.
 
-        // All this needs to be in the try as well because the program will not be able to continue
-        // to this code if revQuery.execute() throws an ApiException. The only workaround is
-        // System.exit(1) in the catch block, which is bad practice.
-        String rev = revData.get("factSheet").get("rev").toString();
-        String type = revData.get("factSheet").get("type").toString();
+        // Get the revision number
+        String rev = QueryUtils.getRev(apiClient, ids.get(1));
+        String type = QueryUtils.getType(apiClient, ids.get(1));
 
         // Remove the relation
         Map<String, String> removeIds = new HashMap<String, String>();
@@ -71,16 +65,13 @@ public class Reset {
         removeIds.put("relid", ids.get(2));
 
         Query removeQuery = new Query(apiClient, "remove.graphql", removeIds);
-        try {
-          removeQuery.execute();
-          System.out.println(">>> Relation between " + ids.get(0) + " and " + ids.get(1) + " removed.");
-        }
-        catch (ApiException e) {
-          System.out.println("Relation between " + ids.get(0) + " and " + ids.get(1) + " not found.");
-        }
+
+        removeQuery.execute();
+        System.out.println(">>> Relation between " + ids.get(0) + " and " + ids.get(1) + " removed.");
       }
       catch (ApiException e) {
-        e.printStackTrace();
+        // Query will print a more detailed error message
+        System.out.println("An error occurred.");
       }
     }
   }
