@@ -97,12 +97,7 @@ class ResetTests {
     }
 
     String[] args = {new FileUtils("apitoken.txt").read()};
-    try {
-      Reset.main(args);
-    }
-    catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
+    Reset.main(args);
 
     // Check if ITComponents are gone
     Query checkResetQuery = new Query(this.apiClient, "checkreset.graphql", new HashMap<String, String>());
@@ -134,12 +129,7 @@ class ResetTests {
     }
 
     String[] args = {new FileUtils("apitoken.txt").read()};
-    try {
-      Reset.main(args);
-    }
-    catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
+    Reset.main(args);
 
     // Check if DataObjects are gone
     Query checkResetQuery = new Query(this.apiClient, "checkreset.graphql", new HashMap<String, String>());

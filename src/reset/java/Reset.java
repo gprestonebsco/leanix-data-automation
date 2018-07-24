@@ -12,8 +12,7 @@ import java.util.*;
 
 public class Reset {
 
-  // TODO: Figure out a better way to handle exception
-  public static void main(String[] args) throws FileNotFoundException {
+  public static void main(String[] args) {
     FileUtils relationsFile1 = new FileUtils("ids/a1.txt", false);
     FileUtils relationsFile2 = new FileUtils("ids/a2.txt", false);
 

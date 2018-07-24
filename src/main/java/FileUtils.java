@@ -13,14 +13,20 @@ class FileUtils {
     this.in = getClass().getResourceAsStream(this.fileName);
   }
 
-  FileUtils(String fileName, boolean resource) throws FileNotFoundException {
+  FileUtils(String fileName, boolean resource) {
     this.fileName = fileName;
 
+    this.in = null;
     if (resource) {
       this.in = getClass().getResourceAsStream(this.fileName);
     }
     else {
-      this.in = new FileInputStream(this.fileName);
+      try {
+        this.in = new FileInputStream(this.fileName);
+      }
+      catch (FileNotFoundException e) {
+        e.printStackTrace();
+      }
     }
   }
 
