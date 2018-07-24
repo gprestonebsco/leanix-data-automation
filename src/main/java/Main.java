@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Main {
 
-  // TODO: Handle ApiException correctly while keeping track of already mutated fact sheets
   public static void main(String[] args) {
     ApiClient apiClient = new ApiClientBuilder()
             .withBasePath("https://us.leanix.net/services/pathfinder/v1")
