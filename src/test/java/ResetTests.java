@@ -3,7 +3,6 @@ import net.leanix.api.common.ApiClientBuilder;
 import net.leanix.api.common.ApiException;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;

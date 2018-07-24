@@ -34,6 +34,8 @@ public class Automation {
     }
 
     String dirName = "ids";
+
+    // Create ids directory if it doesn't exist
     File dir = new File(dirName);
     if (!dir.exists()) {
       boolean created = dir.mkdir();

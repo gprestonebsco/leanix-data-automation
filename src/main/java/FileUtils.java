@@ -41,6 +41,8 @@ class FileUtils {
 
       while((line = reader.readLine()) != null) {
         contents.append(line);
+        // Append a newline
+        contents.append("\n");
       }
 
       reader.close();
