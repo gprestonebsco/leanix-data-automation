@@ -31,7 +31,7 @@ public class Reset {
             .build();
 
     // Test API access
-    Query test = new Query(apiClient, "test.graphql", new HashMap<String, String>());
+    Query test = new Query(apiClient, "test.graphql");
     try {
       test.execute();
 

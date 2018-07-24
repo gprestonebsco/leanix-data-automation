@@ -107,7 +107,7 @@ public class Automation {
             new HashMap<String, List<Map<String, Map<String, Object>>>>();
 
     try {
-      Query mainQuery = new Query(this.apiClient, "main1.graphql", new HashMap<String, String>());
+      Query mainQuery = new Query(this.apiClient, "main1.graphql");
       Map<String, Map<String, Object>> mainData = mainQuery.execute();
 
       List<Map<String, Object>> edgeList = (List<Map<String, Object>>) mainData.get("allFactSheets").get("edges");
@@ -223,7 +223,7 @@ public class Automation {
             new HashMap<String, List<Map<String, Map<String, Object>>>>();
 
     try {
-      Query mainQuery = new Query(this.apiClient, "main2.graphql", new HashMap<String, String>());
+      Query mainQuery = new Query(this.apiClient, "main2.graphql");
       Map<String, Map<String, Object>> mainData = mainQuery.execute();
 
       List<Map<String, Object>> edgeList = (List<Map<String, Object>>) mainData.get("allFactSheets").get("edges");

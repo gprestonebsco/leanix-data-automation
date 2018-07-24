@@ -28,7 +28,7 @@ class ResetTests {
             .withTokenProviderHost("us.leanix.net")
             .build();
 
-    Query resetQuery = new Query(this.apiClient,"resetquery.graphql", new HashMap<String, String>());
+    Query resetQuery = new Query(this.apiClient,"resetquery.graphql");
     Map<String, Map<String, Object>> resetData = resetQuery.execute();
     String providerId = (String) resetData.get("factSheet").get("id");
 
@@ -99,7 +99,7 @@ class ResetTests {
     Reset.main(args);
 
     // Check if ITComponents are gone
-    Query checkResetQuery = new Query(this.apiClient, "checkreset.graphql", new HashMap<String, String>());
+    Query checkResetQuery = new Query(this.apiClient, "checkreset.graphql");
     try {
       Map<String, Map<String, Object>> checkResetData = checkResetQuery.execute();
       this.checkType(true, checkResetData);
@@ -131,7 +131,7 @@ class ResetTests {
     Reset.main(args);
 
     // Check if DataObjects are gone
-    Query checkResetQuery = new Query(this.apiClient, "checkreset.graphql", new HashMap<String, String>());
+    Query checkResetQuery = new Query(this.apiClient, "checkreset.graphql");
     try {
       Map<String, Map<String, Object>> checkResetData = checkResetQuery.execute();
       this.checkType(false, checkResetData);

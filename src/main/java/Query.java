@@ -2,11 +2,16 @@ import net.leanix.api.*;
 import net.leanix.api.common.*;
 import net.leanix.api.models.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 class Query {
   private ApiClient apiClient;
   private String query;
+
+  Query(ApiClient apiClient, String path) {
+    this(apiClient, path, new HashMap<String, String>());
+  }
 
   Query(ApiClient apiClient, String path, Map<String, String> identifiers) {
     this.apiClient = apiClient;

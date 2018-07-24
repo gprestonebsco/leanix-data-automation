@@ -28,7 +28,7 @@ class AutomationTests {
   @Test
   // Test API access
   void testApi() {
-    Query test = new Query(this.apiClient, "test.graphql", new HashMap<String, String>());
+    Query test = new Query(this.apiClient, "test.graphql");
     try {
       test.execute();
     }
@@ -108,7 +108,7 @@ class AutomationTests {
     }
     System.out.println("Reset " + type + "\n");
 
-    Query check = new Query(this.apiClient, "checkrelations.graphql", new HashMap<String, String>());
+    Query check = new Query(this.apiClient, "checkrelations.graphql");
     Map<String, Map<String, Object>> checkData = new HashMap<String, Map<String, Object>>();
     try {
       checkData = check.execute();
