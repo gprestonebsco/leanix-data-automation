@@ -42,6 +42,7 @@ public class Reset {
       erase("a2.txt");
     }
     catch (ApiException e) {
+      e.printStackTrace();
       System.out.println("Invalid API token.");
     }
   }

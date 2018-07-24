@@ -31,7 +31,8 @@ class FileUtils {
   }
 
   // Get the file's contents as a single String
-  // NOTE: Adds a newline at the end of the returned String, whether the file being read has one or not
+  // NOTE: Adds a newline at the end of the returned String, whether the file being read has one or not.
+  // Use String.trim() to fix this if it is an issue.
   String read() {
     String line;
     StringBuilder contents = new StringBuilder();

@@ -95,7 +95,7 @@ class ResetTests {
       fail();
     }
 
-    String[] args = {new FileUtils("apitoken.txt").read()};
+    String[] args = {new FileUtils("apitoken.txt").read().trim()};
     Reset.main(args);
 
     // Check if ITComponents are gone
@@ -127,7 +127,7 @@ class ResetTests {
       fail();
     }
 
-    String[] args = {new FileUtils("apitoken.txt").read()};
+    String[] args = {new FileUtils("apitoken.txt").read().trim()};
     Reset.main(args);
 
     // Check if DataObjects are gone
