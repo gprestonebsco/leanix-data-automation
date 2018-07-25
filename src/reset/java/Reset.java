@@ -2,7 +2,6 @@ import net.leanix.api.common.ApiClient;
 import net.leanix.api.common.ApiClientBuilder;
 import net.leanix.api.common.ApiException;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
