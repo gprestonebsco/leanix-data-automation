@@ -35,10 +35,9 @@ class FileUtils {
   String read() {
     String line;
     StringBuilder contents = new StringBuilder();
-    InputStream in = getClass().getResourceAsStream(this.fileName);
 
     try {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+      BufferedReader reader = new BufferedReader(new InputStreamReader(this.in));
 
       while((line = reader.readLine()) != null) {
         contents.append(line);
@@ -64,7 +63,7 @@ class FileUtils {
     List<String> contents = new ArrayList<String>();
 
     try {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+      BufferedReader reader = new BufferedReader(new InputStreamReader(this.in));
 
       while((line = reader.readLine()) != null) {
         contents.add(line);
