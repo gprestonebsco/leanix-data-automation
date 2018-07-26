@@ -7,14 +7,10 @@
 
 ## Usage
 ### Automation
-`$ java -jar main.jar -t {API token}`
-
-`$ java -jar main.jar -f {API token file path}`
+`$ java -jar main.jar {API token}`
 
 ### Undo Changes Made on Last Fun
 `$ java -jar reset.jar -t {API token}`
-
-`$ java -jar reset.jar -f {API token file path}`
 
 ## Testing
 Tests are currently made specifically for EBSCO's SBEIS workspace, as they make use of fact sheet IDs specific to that location.

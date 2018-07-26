@@ -1,7 +1,6 @@
 import net.leanix.api.common.ApiClient;
 import net.leanix.api.common.ApiClientBuilder;
 import net.leanix.api.common.ApiException;
-import org.apache.commons.cli.*;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -13,65 +12,14 @@ import java.util.*;
 public class Reset {
 
   public static void main(String[] args) {
-    // Command line options to either enter API token directly or read from a file
-    Options options = new Options();
-
-    Option tokenOpt = new Option("t", "token", true, "API token");
-    options.addOption(tokenOpt);
-
-    Option fileOpt = new Option("f", "file", true, "File containing API token");
-    options.addOption(fileOpt);
-
-    Option helpOpt = new Option("h", "help", false, "Display this message");
-    options.addOption(helpOpt);
-
-    CommandLineParser parser = new DefaultParser();
-    HelpFormatter formatter = new HelpFormatter();
-    CommandLine cmd = null;
-
-    try {
-      cmd = parser.parse(options, args);
-    }
-    catch (ParseException e) {
-      System.out.println(e.getMessage());
-      formatter.printHelp("utility-name", options);
-      System.exit(1);
-    }
-
-    boolean helpVal = cmd.hasOption("help");
-    String tokenVal = cmd.getOptionValue("token");
-    String fileVal = cmd.getOptionValue("file");
-
-    if (helpVal) {
-      formatter.printHelp("main.jar [option] <arg>", options);
-      System.exit(0);
-    }
-
-    // Determine where to get API token from
-    String token = null;
-    if (tokenVal != null) {
-      if (fileVal != null) {
-        // Can only use one token
-        System.out.println("Please enter only either a token or a file.");
-        System.exit(1);
-      }
-      else {
-        token = tokenVal;
-      }
-    }
-    else if (fileVal != null) {
-      FileUtils tokenFile = new FileUtils(fileVal, false);
-      token = tokenFile.read().trim();
-    }
-    else {
-      // No token specified
-      System.out.println("No API token specified.");
+    if (args.length == 0) {
+      System.out.println("Please provide an API token.");
       System.exit(1);
     }
 
     ApiClient apiClient = new ApiClientBuilder()
             .withBasePath("https://us.leanix.net/services/pathfinder/v1")
-            .withApiToken(token)
+            .withApiToken(args[0])
             .withTokenProviderHost("us.leanix.net")
             .build();
 
