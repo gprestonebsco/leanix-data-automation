@@ -12,13 +12,9 @@ import java.util.*;
 public class Reset {
 
   public static void main(String[] args) {
-    if (args.length == 0) {
-      System.out.println("Please provide an API token.");
-      System.exit(1);
-    }
-    else if (args[0].equals("--help")) {
+    if (args.length == 0 || args[0].equals("--help")) {
       printUsage();
-      System.exit(0);
+      System.exit(1);
     }
 
     ApiClient apiClient = new ApiClientBuilder()
