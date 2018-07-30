@@ -16,6 +16,10 @@ public class Reset {
       System.out.println("Please provide an API token.");
       System.exit(1);
     }
+    else if (args[0].equals("--help")) {
+      printUsage();
+      System.exit(0);
+    }
 
     ApiClient apiClient = new ApiClientBuilder()
             .withBasePath("https://us.leanix.net/services/pathfinder/v1")
@@ -93,5 +97,10 @@ public class Reset {
     catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  // Print usage message
+  private static void printUsage() {
+    System.out.println("usage: java -jar reset.jar <API token>");
   }
 }

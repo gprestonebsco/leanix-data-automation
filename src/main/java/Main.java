@@ -9,6 +9,10 @@ public class Main {
       System.out.println("Please provide an API token.");
       System.exit(1);
     }
+    else if (args[0].equals("--help")) {
+      printUsage();
+      System.exit(0);
+    }
 
     ApiClient apiClient = new ApiClientBuilder()
             .withBasePath("https://us.leanix.net/services/pathfinder/v1")
@@ -46,6 +50,11 @@ public class Main {
     System.out.println("------------------------------------------------------------------\n");
     System.out.println("Automation 1 IDs saved to ids/a1.txt");
     System.out.println("Automation 2 IDs saved to ids/a2.txt");
+  }
+
+  // Print usage message
+  private static void printUsage() {
+    System.out.println("usage: java -jar main.jar <API token>");
   }
 
   // Print metrics from automation return values
