@@ -10,7 +10,7 @@
 `$ java -jar main.jar {API token}`
 
 ### Undo Changes Made on Last Fun
-`$ java -jar reset.jar -t {API token}`
+`$ java -jar reset.jar {API token}`
 
 ## Testing
 Tests are currently made specifically for EBSCO's SBEIS workspace, as they make use of fact sheet IDs specific to that location.
