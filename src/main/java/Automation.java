@@ -26,10 +26,8 @@ public class Automation {
 
   // Output changed IDs of affected fact sheets
   private void writeOutput(String fname) {
-    List<List<String>> relations = this.getNewRelations();
-
     List<String> relationsStr = new ArrayList<String>();
-    for (List<String> ids : relations) {
+    for (List<String> ids : this.newRelations) {
       relationsStr.add(String.join(",", ids));
     }
 
