@@ -6,6 +6,8 @@
 * Java 8
 
 ## Usage
+To generate an API token, you must be an administrator in LeanIX. From the home page, click on your picture in the top right -> Administration -> API Tokens (under Developers) -> New Token.
+
 ### Automation
 `$ java -jar main.jar {API token}`
 
